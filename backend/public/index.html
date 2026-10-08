@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solar + Wind Prediction</title>
+  <style>
+    :root { font-family: Georgia, serif; color: #17251f; background: #edf2e8; }
+    body { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1 { margin-bottom: 8px; font-size: clamp(2rem, 5vw, 4rem); letter-spacing: -0.03em; }
+    .intro { color: #536258; margin-bottom: 28px; }
+    form { background: #fffdf5; border: 1px solid #cad5c7; padding: 22px; border-radius: 8px; }
+    .date-row { max-width: 360px; margin-bottom: 22px; }
+    .groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    fieldset { border: 1px solid #d5ded1; min-width: 0; }
+    legend { font-weight: bold; padding: 0 8px; }
+    label { display: grid; gap: 5px; margin: 12px 0; font-size: .9rem; }
+    input { width: 100%; box-sizing: border-box; border: 1px solid #b9c7b8; border-radius: 4px; padding: 9px; font: inherit; background: #fff; }
+    button { margin-top: 20px; padding: 12px 18px; border: 0; border-radius: 4px; background: #23634a; color: white; font: inherit; cursor: pointer; }
+    button:disabled { opacity: .6; }
+    #status { min-height: 24px; margin-top: 18px; color: #536258; }
+    .results { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+    .result { background: #173b31; color: #f5f4e9; padding: 20px; border-radius: 8px; }
+    .result strong { display: block; font-size: 2rem; margin-top: 8px; }
+    @media (max-width: 700px) { .groups, .results { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>Energy forecast</h1>
+  <p class="intro">Choose an hourly date. Leave weather fields blank to use the JSON weather data automatically.</p>
+  <form id="prediction-form">
+    <label class="date-row">Date and time <input id="date" type="datetime-local" required value="2020-05-15T12:00"></label>
+    <div class="groups">
+      <fieldset><legend>Solar inputs</legend><div id="solar-fields"></div></fieldset>
+      <fieldset><legend>Wind inputs</legend><div id="wind-fields"></div></fieldset>
+    </div>
+    <button id="submit" type="submit">Predict electricity output</button>
+  </form>
+  <p id="status"></p>
+  <div class="results" id="results" hidden>
+    <div class="result">Solar output<strong id="solar-output">-</strong></div>
+    <div class="result">Wind output<strong id="wind-output">-</strong></div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

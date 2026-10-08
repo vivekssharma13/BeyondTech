@@ -1,0 +1,7 @@
+{
+  "name": "solar-wind-prediction-api",
+  "private": true,
+  "scripts": {
+    "start": "node api_server.js"
+  }
+}

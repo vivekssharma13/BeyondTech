@@ -1,0 +1,19 @@
+{
+  "split": "60% train / 20% test / 20% validation",
+  "models": {
+    "solar_power": {
+      "model": "ExtraTrees",
+      "MAE": 5.674456073993849,
+      "RMSE": 27.069468043218126,
+      "R2": 0.9644318280220441,
+      "file": "best_solar_power_model.joblib"
+    },
+    "wind_power": {
+      "model": "ExtraTrees",
+      "MAE": 20.93959710925015,
+      "RMSE": 42.305573471018036,
+      "R2": 0.914727127223909,
+      "file": "best_wind_power_model.joblib"
+    }
+  }
+}
