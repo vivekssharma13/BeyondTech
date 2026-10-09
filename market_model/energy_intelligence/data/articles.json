@@ -1,0 +1,194 @@
+[
+    {
+      "id": "article-001",
+      "title": "Extreme heat expected across southern region",
+      "category": "WEATHER",
+      "description": "Temperatures are expected to remain elevated during afternoon and evening hours, increasing cooling requirements across commercial and residential consumers.",
+      "source": "Simulated Weather Authority",
+      "publishedAt": "2026-10-03T09:00:00Z"
+    },
+    {
+      "id": "article-002",
+      "title": "Industrial electricity consumption forecast revised upward",
+      "category": "DEMAND",
+      "description": "Electricity consumption from industrial facilities is expected to increase during peak operating hours over the next 24 hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T09:15:00Z"
+    },
+    {
+      "id": "article-003",
+      "title": "Transmission corridor maintenance scheduled",
+      "category": "GRID",
+      "description": "Planned maintenance on a major transmission corridor is expected to temporarily reduce power transfer capability during peak hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T09:30:00Z"
+    },
+    {
+      "id": "article-004",
+      "title": "Solar generation forecast revised downward",
+      "category": "SOLAR",
+      "description": "Increased cloud cover is expected to reduce solar generation during afternoon hours across multiple renewable generation zones.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T09:45:00Z"
+    },
+    {
+      "id": "article-005",
+      "title": "Wind generation expected to weaken overnight",
+      "category": "WIND",
+      "description": "Wind generation forecasts indicate reduced wind speeds and lower renewable output during overnight operating hours.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:00:00Z"
+    },
+    {
+      "id": "article-006",
+      "title": "Wholesale electricity prices expected to increase during evening peak",
+      "category": "MARKET",
+      "description": "Higher demand combined with constrained generation availability is expected to increase wholesale electricity prices during the evening peak.",
+      "source": "Simulated Electricity Market Authority",
+      "publishedAt": "2026-10-03T10:15:00Z"
+    },
+    {
+      "id": "article-007",
+      "title": "High solar generation expected during midday hours",
+      "category": "SOLAR",
+      "description": "Clear weather conditions are expected to result in strong solar generation during midday, increasing renewable supply available to the grid.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:30:00Z"
+    },
+    {
+      "id": "article-008",
+      "title": "Strong wind conditions forecast for renewable generation zones",
+      "category": "WIND",
+      "description": "Higher wind speeds are expected to increase wind generation during the next operating period.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:45:00Z"
+    },
+    {
+      "id": "article-009",
+      "title": "Additional transmission capacity expected to become available",
+      "category": "GRID",
+      "description": "A transmission upgrade is expected to increase the ability to transfer renewable generation from high-output regions to demand centers.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T11:00:00Z"
+    },
+    {
+      "id": "article-010",
+      "title": "Electricity demand expected to decline overnight",
+      "category": "DEMAND",
+      "description": "Lower commercial and industrial activity is expected to reduce electricity consumption during overnight hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T11:15:00Z"
+    },
+    {
+      "id": "article-011",
+      "title": "Renewable generation may exceed regional demand during midday",
+      "category": "RENEWABLE",
+      "description": "Strong solar and wind generation combined with moderate demand may result in renewable generation exceeding regional demand during midday hours.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T11:30:00Z"
+    },
+    {
+      "id": "article-012",
+      "title": "Power market volatility increases amid changing demand forecasts",
+      "category": "MARKET",
+      "description": "Updated demand and renewable generation forecasts are contributing to increased uncertainty in short-term electricity market conditions.",
+      "source": "Simulated Electricity Market Authority",
+      "publishedAt": "2026-10-03T11:45:00Z"
+    },
+    {
+      "id": "article-001",
+      "title": "Extreme heat expected across southern region",
+      "category": "WEATHER",
+      "description": "Temperatures are expected to remain elevated during afternoon and evening hours, increasing cooling requirements across commercial and residential consumers.",
+      "source": "Simulated Weather Authority",
+      "publishedAt": "2026-10-03T09:00:00Z"
+    },
+    {
+      "id": "article-002",
+      "title": "Industrial electricity consumption forecast revised upward",
+      "category": "DEMAND",
+      "description": "Electricity consumption from industrial facilities is expected to increase during peak operating hours over the next 24 hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T09:15:00Z"
+    },
+    {
+      "id": "article-003",
+      "title": "Transmission corridor maintenance scheduled",
+      "category": "GRID",
+      "description": "Planned maintenance on a major transmission corridor is expected to temporarily reduce power transfer capability during peak hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T09:30:00Z"
+    },
+    {
+      "id": "article-004",
+      "title": "Solar generation forecast revised downward",
+      "category": "SOLAR",
+      "description": "Increased cloud cover is expected to reduce solar generation during afternoon hours across multiple renewable generation zones.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T09:45:00Z"
+    },
+    {
+      "id": "article-005",
+      "title": "Wind generation expected to weaken overnight",
+      "category": "WIND",
+      "description": "Wind generation forecasts indicate reduced wind speeds and lower renewable output during overnight operating hours.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:00:00Z"
+    },
+    {
+      "id": "article-006",
+      "title": "Wholesale electricity prices expected to increase during evening peak",
+      "category": "MARKET",
+      "description": "Higher demand combined with constrained generation availability is expected to increase wholesale electricity prices during the evening peak.",
+      "source": "Simulated Electricity Market Authority",
+      "publishedAt": "2026-10-03T10:15:00Z"
+    },
+    {
+      "id": "article-007",
+      "title": "High solar generation expected during midday hours",
+      "category": "SOLAR",
+      "description": "Clear weather conditions are expected to result in strong solar generation during midday, increasing renewable supply available to the grid.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:30:00Z"
+    },
+    {
+      "id": "article-008",
+      "title": "Strong wind conditions forecast for renewable generation zones",
+      "category": "WIND",
+      "description": "Higher wind speeds are expected to increase wind generation during the next operating period.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T10:45:00Z"
+    },
+    {
+      "id": "article-009",
+      "title": "Additional transmission capacity expected to become available",
+      "category": "GRID",
+      "description": "A transmission upgrade is expected to increase the ability to transfer renewable generation from high-output regions to demand centers.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T11:00:00Z"
+    },
+    {
+      "id": "article-010",
+      "title": "Electricity demand expected to decline overnight",
+      "category": "DEMAND",
+      "description": "Lower commercial and industrial activity is expected to reduce electricity consumption during overnight hours.",
+      "source": "Simulated Grid Authority",
+      "publishedAt": "2026-10-03T11:15:00Z"
+    },
+    {
+      "id": "article-011",
+      "title": "Renewable generation may exceed regional demand during midday",
+      "category": "RENEWABLE",
+      "description": "Strong solar and wind generation combined with moderate demand may result in renewable generation exceeding regional demand during midday hours.",
+      "source": "Simulated Renewable Energy Authority",
+      "publishedAt": "2026-10-03T11:30:00Z"
+    },
+    {
+      "id": "article-012",
+      "title": "Power market volatility increases amid changing demand forecasts",
+      "category": "MARKET",
+      "description": "Updated demand and renewable generation forecasts are contributing to increased uncertainty in short-term electricity market conditions.",
+      "source": "Simulated Electricity Market Authority",
+      "publishedAt": "2026-10-03T11:45:00Z"
+    }
+  ]

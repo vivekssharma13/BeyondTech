@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Energy Intelligence</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div>
+        <div class="brand">⚡ ENERGY INTELLIGENCE</div>
+        <div class="subtitle">Renewable Energy & Market Monitor</div>
+    </div>
+
+    <div class="live-badge">
+        SIMULATED LIVE FEED
+    </div>
+    <nav>
+
+        <a href="articles/articles.html">
+            Energy Articles
+        </a>
+    
+        <a href="market/electricity-price.html">
+            Electricity Market
+        </a>
+    
+        <a href="grid/transmission.html">
+            Grid & Transmission
+        </a>
+    
+    </nav>
+</header>
+
+
+<main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div>
+            <p class="eyebrow">EXTERNAL WORLD INTELLIGENCE</p>
+
+            <h1>
+                Signals that move<br>
+                the energy market.
+            </h1>
+
+            <p>
+                Simulated government, market and grid intelligence
+                for the Renewable Energy Orchestrator.
+            </p>
+        </div>
+
+        <div class="scenario-control">
+            <label for="scenarioSelect">
+                Simulation Scenario
+            </label>
+
+            <select id="scenarioSelect">
+                <option value="normal">Normal Market</option>
+                <option value="highDemand">High Demand</option>
+                <option value="gridConstraint">Grid Constraint</option>
+                <option value="renewableSurplus">
+                    Renewable Surplus
+                </option>
+                <option value="combinedEvent">
+                    Combined Event
+                </option>
+            </select>
+        </div>
+    </section>
+
+
+    <!-- MARKET SNAPSHOT -->
+    <section>
+        <div class="section-header">
+            <h2>Market Snapshot</h2>
+            <span id="scenarioStatus"></span>
+        </div>
+
+        <div id="marketSnapshot" class="metric-grid">
+            <!-- JavaScript will populate this -->
+        </div>
+    </section>
+
+
+    <!-- ARTICLES -->
+    <!-- <section>
+        <div class="section-header">
+            <h2>Energy Intelligence</h2>
+            <span>External Signals</span>
+        </div>
+
+        <div id="articles" class="article-grid">
+             JavaScript will populate this 
+        </div>
+    </section> -->
+    
+    <!-- EXTERNAL SIGNALS -->
+    <section>
+        <div class="section-header">
+            <h2>External Signals</h2>
+            <span>Latest intelligence</span>
+        </div>
+
+        <div id="externalSignals" class="article-grid">
+            <!-- JavaScript will populate this -->
+        </div>
+
+        <div class="section-action">
+            <a href="articles/articles.html">
+                View all external signals →
+            </a>
+        </div>
+    </section>
+
+
+    <!-- GENERATION MIX -->
+    <section>
+        <div class="section-header">
+            <h2>Generation & Reserve</h2>
+        </div>
+
+        <div id="generationMix">
+            <!-- JavaScript will populate this -->
+        </div>
+    </section>
+
+
+    <!-- SYSTEM STATUS -->
+    <section>
+        <div class="section-header">
+            <h2>Simulation Status</h2>
+        </div>
+
+        <div id="signalStatus">
+            <!-- JavaScript will populate this -->
+        </div>
+    </section>
+
+</main>
+
+
+<footer>
+    Simulated environment • Renewable Energy Orchestrator
+</footer>
+
+
+<script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Grid & Transmission | Energy Intelligence</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="eyebrow">GRID INTELLIGENCE</div>
+            <h1>Grid & Transmission</h1>
+            <p>Current grid operating observations.</p>
+        </div>
+
+        <nav>
+            <a href="../index.html">Dashboard</a>
+            <a href="../articles/articles.html">Articles</a>
+            <a href="../market/electricity-price.html">Electricity Market</a>
+            <a href="../grid/transmission.html">Grid & Transmission</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="page-intro">
+            <h2>Grid Status</h2>
+
+            <p>
+                Raw grid and transmission observations collected from the
+                simulated grid authority.
+            </p>
+        </section>
+
+        <section id="gridData" class="data-grid">
+            <p>Loading grid data...</p>
+        </section>
+
+    </main>
+
+    <script>
+
+        async function loadGridData() {
+
+            const container = document.getElementById("gridData");
+
+            try {
+
+                const response = await fetch("../data/scenarios.json");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load grid data");
+                }
+
+                const scenarios = await response.json();
+
+                const selectedScenario = localStorage.getItem("selectedScenario") || "normal";
+                const scenario = scenarios[selectedScenario];
+
+                const transmissionStatus =
+                    scenario.grid.transmissionConstraint
+                        ? "Constrained"
+                        : "Normal";
+
+                const transmissionConstraint =
+                    scenario.grid.transmissionConstraint
+                        ? "Yes"
+                        : "No";
+
+                container.innerHTML = `
+
+                    <div class="data-card">
+                        <span>Grid Frequency</span>
+                        <strong>
+                            ${scenario.grid.frequency} Hz
+                        </strong>
+                        <small>
+                            Current frequency
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Transmission Constraint</span>
+                        <strong>
+                            ${transmissionConstraint}
+                        </strong>
+                        <small>
+                            Current transmission state
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Transmission Status</span>
+                        <strong>
+                            ${transmissionStatus}
+                        </strong>
+                        <small>
+                            Current status
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Battery State of Charge</span>
+                        <strong>
+                            ${scenario.battery.stateOfCharge}%
+                        </strong>
+                        <small>
+                            Current battery SOC
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Observation Time</span>
+                        <strong>
+                            10:00 UTC
+                        </strong>
+                        <small>
+                            Grid observation
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Data Source</span>
+                        <strong>
+                            Simulated
+                        </strong>
+                        <small>
+                            Grid Authority
+                        </small>
+                    </div>
+
+                `;
+
+            } catch (error) {
+
+                container.innerHTML = `
+                    <p>Unable to load grid data.</p>
+                `;
+
+                console.error(error);
+            }
+        }
+
+        loadGridData();
+
+    </script>
+
+</body>
+
+</html>

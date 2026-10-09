@@ -1,0 +1,191 @@
+{
+    "normal": {
+      "name": "Normal Market",
+      "description": "Stable operating conditions with balanced demand and renewable generation.",
+  
+      "market": {
+        "electricityPrice": 5.8,
+        "priceUnit": "INR/kWh",
+        "priceChange": 0,
+        "priceChangePeriod": "1h"
+      },
+  
+      "demand": {
+        "current": 165,
+        "forecast": 168,
+        "unit": "GW",
+        "changePercent": 1.8
+      },
+  
+      "renewableGeneration": {
+        "solar": 82,
+        "wind": 35,
+        "unit": "GW"
+      },
+  
+      "battery": {
+        "stateOfCharge": 65,
+        "unit": "percent"
+      },
+  
+      "grid": {
+        "frequency": 50.0,
+        "unit": "Hz",
+        "transmissionConstraint": false
+      },
+  
+      "timestamp": "2026-10-03T10:00:00Z"
+    },
+  
+    "highDemand": {
+      "name": "High Demand",
+      "description": "High electricity demand caused by increased cooling and industrial consumption.",
+  
+      "market": {
+        "electricityPrice": 10.5,
+        "priceUnit": "INR/kWh",
+        "priceChange": 81,
+        "priceChangePeriod": "1h"
+      },
+  
+      "demand": {
+        "current": 195,
+        "forecast": 202,
+        "unit": "GW",
+        "changePercent": 18
+      },
+  
+      "renewableGeneration": {
+        "solar": 65,
+        "wind": 28,
+        "unit": "GW"
+      },
+  
+      "battery": {
+        "stateOfCharge": 82,
+        "unit": "percent"
+      },
+  
+      "grid": {
+        "frequency": 49.92,
+        "unit": "Hz",
+        "transmissionConstraint": false
+      },
+  
+      "timestamp": "2026-10-03T10:00:00Z"
+    },
+  
+    "gridConstraint": {
+      "name": "Grid Constraint",
+      "description": "Transmission constraints are limiting renewable energy evacuation.",
+  
+      "market": {
+        "electricityPrice": 7.8,
+        "priceUnit": "INR/kWh",
+        "priceChange": 34,
+        "priceChangePeriod": "1h"
+      },
+  
+      "demand": {
+        "current": 178,
+        "forecast": 182,
+        "unit": "GW",
+        "changePercent": 7
+      },
+  
+      "renewableGeneration": {
+        "solar": 79,
+        "wind": 33,
+        "unit": "GW"
+      },
+  
+      "battery": {
+        "stateOfCharge": 75,
+        "unit": "percent"
+      },
+  
+      "grid": {
+        "frequency": 49.96,
+        "unit": "Hz",
+        "transmissionConstraint": true
+      },
+  
+      "timestamp": "2026-10-03T10:00:00Z"
+    },
+  
+    "renewableSurplus": {
+      "name": "Renewable Surplus",
+      "description": "High renewable generation is exceeding current system demand.",
+  
+      "market": {
+        "electricityPrice": 3.2,
+        "priceUnit": "INR/kWh",
+        "priceChange": -45,
+        "priceChangePeriod": "1h"
+      },
+  
+      "demand": {
+        "current": 158,
+        "forecast": 155,
+        "unit": "GW",
+        "changePercent": -2
+      },
+  
+      "renewableGeneration": {
+        "solar": 108,
+        "wind": 46,
+        "unit": "GW"
+      },
+  
+      "battery": {
+        "stateOfCharge": 45,
+        "unit": "percent"
+      },
+  
+      "grid": {
+        "frequency": 50.06,
+        "unit": "Hz",
+        "transmissionConstraint": false
+      },
+  
+      "timestamp": "2026-10-03T10:00:00Z"
+    },
+  
+    "combinedEvent": {
+      "name": "Combined Event",
+      "description": "High demand, reduced renewable generation and transmission constraints occur simultaneously.",
+  
+      "market": {
+        "electricityPrice": 13.8,
+        "priceUnit": "INR/kWh",
+        "priceChange": 137,
+        "priceChangePeriod": "1h"
+      },
+  
+      "demand": {
+        "current": 202,
+        "forecast": 211,
+        "unit": "GW",
+        "changePercent": 23
+      },
+  
+      "renewableGeneration": {
+        "solar": 61,
+        "wind": 24,
+        "unit": "GW"
+      },
+  
+      "battery": {
+        "stateOfCharge": 90,
+        "unit": "percent"
+      },
+  
+      "grid": {
+        "frequency": 49.88,
+        "unit": "Hz",
+        "transmissionConstraint": true
+      },
+  
+      "timestamp": "2026-10-03T10:00:00Z"
+    }
+  }

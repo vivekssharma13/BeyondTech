@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Energy Articles | Energy Intelligence</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="eyebrow">EXTERNAL WORLD INTELLIGENCE</div>
+            <h1>Energy Articles</h1>
+            <p>External signals affecting the energy ecosystem.</p>
+        </div>
+
+        <nav>
+            <a href="../index.html">Dashboard</a>
+            <a href="../articles/articles.html">Articles</a>
+            <a href="../market/electricity-price.html">Electricity Market</a>
+            <a href="../grid/transmission.html">Grid & Transmission</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="page-intro">
+            <h2>External Intelligence Feed</h2>
+            <p>
+                External observations collected from simulated weather,
+                demand, renewable generation, grid and electricity market sources.
+                These observations are raw inputs for downstream energy analysis.
+                No AI interpretation is applied here.
+            </p>
+        </section>
+
+        <section id="articlesContainer" class="articles-grid">
+            <p>Loading articles...</p>
+        </section>
+
+    </main>
+
+    <script>
+        async function loadArticles() {
+
+            const container = document.getElementById("articlesContainer");
+
+            try {
+
+                const response = await fetch("../data/articles.json");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load articles");
+                }
+
+                const articles = await response.json();
+
+                container.innerHTML = "";
+
+                articles.forEach(article => {
+
+                    const articleElement = document.createElement("article");
+
+                    articleElement.className = "article-card";
+
+                    articleElement.innerHTML = `
+                        <div class="article-category">
+                            ${article.category}
+                        </div>
+
+                        <h3>${article.title}</h3>
+
+                        <p class="article-description">
+                            ${article.description}
+                        </p>
+
+                        <div class="article-meta">
+                            <span>${article.source}</span>
+                            <span>${article.publishedAt}</span>
+                        </div>
+                    `;
+
+                    container.appendChild(articleElement);
+                });
+
+            } catch (error) {
+
+                container.innerHTML = `
+                    <p>
+                        Unable to load external articles.
+                    </p>
+                `;
+
+                console.error(error);
+            }
+        }
+
+        loadArticles();
+    </script>
+
+</body>
+
+</html>

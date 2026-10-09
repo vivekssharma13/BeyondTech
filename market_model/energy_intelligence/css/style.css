@@ -1,0 +1,374 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7f8;
+    color: #18242b;
+    line-height: 1.5;
+}
+
+/* =========================
+   TOP BAR
+   ========================= */
+
+.topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #dce3e7;
+    padding: 18px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 30px;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #6b7b84;
+    margin-top: 2px;
+}
+
+.live-badge {
+    background: #e8f6ee;
+    color: #18794e;
+    border: 1px solid #bde5ce;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 22px;
+}
+
+nav a {
+    color: #31434c;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: #007f5f;
+}
+
+/* =========================
+   MAIN CONTAINER
+   ========================= */
+
+.container {
+    width: min(1150px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 32px 0 50px;
+}
+
+/* =========================
+   HERO
+   ========================= */
+
+.hero {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 42px 36px;
+    margin-bottom: 32px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+
+    border: 1px solid #e0e7ea;
+}
+
+.eyebrow {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #16805d;
+    margin-bottom: 10px;
+}
+
+.hero h1 {
+    font-size: 42px;
+    line-height: 1.12;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+}
+
+.hero p:not(.eyebrow) {
+    color: #667780;
+    font-size: 16px;
+    max-width: 680px;
+}
+
+.scenario-control {
+    min-width: 250px;
+}
+
+.scenario-control label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #60717a;
+    margin-bottom: 8px;
+}
+
+.scenario-control select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccd8dd;
+    border-radius: 9px;
+    background: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* =========================
+   SECTIONS
+   ========================= */
+
+section {
+    margin-bottom: 34px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+    letter-spacing: -0.4px;
+}
+
+.section-header span {
+    color: #71818a;
+    font-size: 13px;
+}
+
+/* =========================
+   MARKET SNAPSHOT
+   ========================= */
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #dfe7ea;
+    border-radius: 14px;
+    padding: 22px;
+    min-height: 125px;
+}
+
+.metric-label {
+    font-size: 13px;
+    color: #687982;
+    margin-bottom: 7px;
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.metric-change {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #5e6e76;
+}
+
+/* =========================
+   EXTERNAL SIGNALS
+   ========================= */
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.article-card {
+    background: #ffffff;
+    border: 1px solid #dfe7ea;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.article-category {
+    font-size: 11px;
+    font-weight: 800;
+    color: #16805d;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.article-card h3 {
+    font-size: 17px;
+    line-height: 1.3;
+    margin-bottom: 10px;
+}
+
+.article-card p {
+    font-size: 13px;
+    color: #667780;
+    margin-bottom: 8px;
+}
+
+.article-card p:last-child {
+    margin-bottom: 0;
+    font-size: 12px;
+    color: #89969c;
+}
+
+.section-action {
+    margin-top: 16px;
+}
+
+.section-action a {
+    color: #007f5f;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.section-action a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   GENERATION & RESERVE
+   ========================= */
+
+#generationMix {
+    background: #ffffff;
+    border: 1px solid #dfe7ea;
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.generation-item {
+    margin-bottom: 20px;
+}
+
+.generation-item:last-child {
+    margin-bottom: 0;
+}
+
+.generation-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.generation-label strong {
+    font-weight: 700;
+}
+
+.progress {
+    height: 10px;
+    background: #e8edef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #16805d;
+    border-radius: 10px;
+}
+
+/* =========================
+   SIMULATION STATUS
+   ========================= */
+
+#signalStatus .article-card {
+    width: 100%;
+}
+
+#signalStatus h3 {
+    margin-bottom: 8px;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+footer {
+    text-align: center;
+    padding: 24px;
+    color: #7a898f;
+    font-size: 12px;
+    border-top: 1px solid #dfe7ea;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+
+    .topbar {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .article-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        width: min(100% - 24px, 1150px);
+    }
+
+    .hero {
+        padding: 28px 22px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .metric-grid,
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Electricity Market | Energy Intelligence</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="eyebrow">ENERGY MARKET</div>
+            <h1>Electricity Market</h1>
+            <p>Current electricity market observations.</p>
+        </div>
+
+        <nav>
+            <a href="../index.html">Dashboard</a>
+            <a href="../articles/articles.html">Articles</a>
+            <a href="../market/electricity-price.html">Electricity Market</a>
+            <a href="../grid/transmission.html">Grid & Transmission</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="page-intro">
+            <h2>Market Snapshot</h2>
+            <p>
+                Raw market observations collected from the simulated electricity
+                market authority.
+            </p>
+        </section>
+
+        <section id="marketData" class="data-grid">
+            <p>Loading market data...</p>
+        </section>
+
+    </main>
+
+    <script>
+
+        async function loadMarketData() {
+
+            const container = document.getElementById("marketData");
+
+            try {
+
+                const response = await fetch("../data/scenarios.json");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load market data");
+                }
+
+                const scenarios = await response.json();
+
+                const selectedScenario = localStorage.getItem("selectedScenario") || "normal";
+                const scenario = scenarios[selectedScenario];
+
+                container.innerHTML = `
+
+                    <div class="data-card">
+                        <span>Current Electricity Price</span>
+                        <strong>
+                            ₹${scenario.market.electricityPrice}
+                        </strong>
+                        <small>
+                            ${scenario.market.priceUnit}
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Price Change</span>
+                        <strong>
+                            ${scenario.market.priceChange}%
+                        </strong>
+                        <small>
+                            over ${scenario.market.priceChangePeriod}
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>System Demand</span>
+                        <strong>
+                            ${scenario.demand.current} GW
+                        </strong>
+                        <small>
+                            Current demand
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Demand Forecast</span>
+                        <strong>
+                            ${scenario.demand.forecast} GW
+                        </strong>
+                        <small>
+                            Forecast demand
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Solar Generation</span>
+                        <strong>
+                            ${scenario.renewableGeneration.solar} GW
+                        </strong>
+                        <small>
+                            Current generation
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Wind Generation</span>
+                        <strong>
+                            ${scenario.renewableGeneration.wind} GW
+                        </strong>
+                        <small>
+                            Current generation
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Observation Period</span>
+                        <strong>
+                            10:00 UTC
+                        </strong>
+                        <small>
+                            Market observation
+                        </small>
+                    </div>
+
+                    <div class="data-card">
+                        <span>Data Source</span>
+                        <strong>
+                            Simulated
+                        </strong>
+                        <small>
+                            Electricity Market Authority
+                        </small>
+                    </div>
+
+                `;
+
+            } catch (error) {
+
+                container.innerHTML = `
+                    <p>Unable to load market data.</p>
+                `;
+
+                console.error(error);
+            }
+        }
+
+        loadMarketData();
+
+    </script>
+
+</body>
+
+</html>

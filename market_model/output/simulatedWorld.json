@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-10-05T15:21:24.456059+00:00",
+  "total_results": 4,
+  "results": [
+    {
+      "source": "website",
+      "title": "Energy Articles | Energy Intelligence",
+      "heading": "Energy Articles",
+      "url": "http://localhost:8000/articles/articles.html",
+      "content_type": "html",
+      "relevance_score": 67,
+      "matched_keywords": [
+        "solar",
+        "solar generation",
+        "wind",
+        "wind generation",
+        "electricity price",
+        "electricity market",
+        "power market",
+        "grid",
+        "transmission",
+        "electricity demand",
+        "demand forecast",
+        "electricity consumption",
+        "temperature",
+        "renewable energy",
+        "renewable generation"
+      ],
+      "text": "Energy Articles | Energy Intelligence EXTERNAL WORLD INTELLIGENCE Energy Articles External signals affecting the energy ecosystem. Dashboard Articles Electricity Market Grid & Transmission External Intelligence Feed External observations collected from simulated weather, demand, renewable generation, grid and electricity market sources. These observations are raw inputs for downstream energy analysis. No AI interpretation is applied here. WEATHER Extreme heat expected across southern region Temperatures are expected to remain elevated during afternoon and evening hours, increasing cooling requirements across commercial and residential consumers. Simulated Weather Authority 2026-10-03T09:00:00Z DEMAND Industrial electricity consumption forecast revised upward Electricity consumption from industrial facilities is expected to increase during peak operating hours over the next 24 hours. Simulated Grid Authority 2026-10-03T09:15:00Z GRID Transmission corridor maintenance scheduled Planned maintenance on a major transmission corridor is expected to temporarily reduce power transfer capability during peak hours. Simulated Grid Authority 2026-10-03T09:30:00Z SOLAR Solar generation forecast revised downward Increased cloud cover is expected to reduce solar generation during afternoon hours across multiple renewable generation zones. Simulated Renewable Energy Authority 2026-10-03T09:45:00Z WIND Wind generation expected to weaken overnight Wind generation forecasts indicate reduced wind speeds and lower renewable output during overnight operating hours. Simulated Renewable Energy Authority 2026-10-03T10:00:00Z MARKET Wholesale electricity prices expected to increase during evening peak Higher demand combined with constrained generation availability is expected to increase wholesale electricity prices during the evening peak. Simulated Electricity Market Authority 2026-10-03T10:15:00Z SOLAR High solar generation expected during midday hours Clear weather conditions are expected to result in strong solar generation during midday, increasing renewable supply available to the grid. Simulated Renewable Energy Authority 2026-10-03T10:30:00Z WIND Strong wind conditions forecast for renewable generation zones Higher wind speeds are expected to increase wind generation during the next operating period. Simulated Renewable Energy Authority 2026-10-03T10:45:00Z GRID Additional transmission capacity expected to become available A transmission upgrade is expected to increase the ability to transfer renewable generation from high-output regions to demand centers. Simulated Grid Authority 2026-10-03T11:00:00Z DEMAND Electricity demand expected to decline overnight Lower commercial and industrial activity is expected to reduce electricity consumption during overnight hours. Simulated Grid Authority 2026-10-03T11:15:00Z RENEWABLE Renewable generation may exceed regional demand during midday Strong solar and wind generation combined with moderate demand may result in renewable generation exceeding regional demand during midday hours. Simulated Renewable Energy Authority 2026-10-03T11:30:00Z MARKET Power market volatility increases amid changing demand forecasts Updated demand and renewable generation forecasts are contributing to increased uncertainty in short-term electricity market conditions. Simulated Electricity Market Authority 2026-10-03T11:45:00Z WEATHER Extreme heat expected across southern region Temperatures are expected to remain elevated during afternoon and evening hours, increasing cooling requirements across commercial and residential consumers. Simulated Weather Authority 2026-10-03T09:00:00Z DEMAND Industrial electricity consumption forecast revised upward Electricity consumption from industrial facilities is expected to increase during peak operating hours over the next 24 hours. Simulated Grid Authority 2026-10-03T09:15:00Z GRID Transmission corridor maintenance scheduled Planned maintenance on a major transmission corridor is expected to temporarily reduce power transfer capability during peak hours. Simulated Grid Authority 2026-10-03T09:30:00Z SOLAR Solar generation forecast revised downward Increased cloud cover is expected to reduce solar generation during afternoon hours across multiple renewable generation zones. Simulated Renewable Energy Authority 2026-10-03T09:45:00Z WIND Wind generation expected to weaken overnight Wind generation forecasts indicate reduced wind speeds and lower renewable output during overnight operating hours. Simulated Renewable Energy Authority 2026-10-03T10:00:00Z MARKET Wholesale electricity prices expected to increase during evening peak Higher demand combined with constrained generation availability is expected to increase wholesale electricity prices during the evening peak. Simulated Electricity Market Authority 2026-10-03T10:15:00Z SOLAR High solar generation expected during midday hours Clear weather conditions are expected to result in strong solar generation during midday, increasing renewable supply available to the grid. Simulated Renewable Energy Authority 2026-10-03T10:30:00Z WIND Strong wind conditions forecast for renewable generation zones Higher wind speeds are expected to increase wind generation during the next operating period. Simulated Renewable Energy Authority 2026-10-03T10:45:00Z GRID Additional transmission capacity expected to become available A transmission upgrade is expected to increase the ability to transfer renewable generation from high-output regions to demand centers. Simulated Grid Authority 2026-10-03T11:00:00Z DEMAND Electricity demand expected to decline overnight Lower commercial and industrial activity is expected to reduce electricity consumption during overnight hours. Simulated Grid Authority 2026-10-03T11:15:00Z RENEWABLE Renewable generation may exceed regional demand during midday Strong solar and wind generation combined with moderate demand may result in renewable generation exceeding regional demand during midday hours. Simulated Renewable Energy Authority 2026-10-03T11:30:00Z MARKET Power market volatility increases amid changing demand forecasts Updated demand and renewable generation forecasts are contributing to increased uncertainty in short-term electricity market conditions. Simulated Electricity Market Authority 2026-10-03T11:45:00Z",
+      "market_data": {}
+    },
+    {
+      "source": "website",
+      "title": "Energy Intelligence",
+      "heading": "Signals that move the energy market.",
+      "url": "http://localhost:8000",
+      "content_type": "html",
+      "relevance_score": 54,
+      "matched_keywords": [
+        "solar",
+        "solar generation",
+        "wind",
+        "wind generation",
+        "electricity price",
+        "electricity market",
+        "grid",
+        "transmission",
+        "electricity consumption",
+        "battery",
+        "temperature",
+        "renewable energy",
+        "renewable generation"
+      ],
+      "text": "Energy Intelligence ⚡ ENERGY INTELLIGENCE Renewable Energy & Market Monitor SIMULATED LIVE FEED Energy Articles Electricity Market Grid & Transmission EXTERNAL WORLD INTELLIGENCE Signals that move the energy market. Simulated government, market and grid intelligence for the Renewable Energy Orchestrator. Simulation Scenario Normal Market High Demand Grid Constraint Renewable Surplus Combined Event Market Snapshot Electricity Price ₹5.8/kWh 0% System Demand 165 GW 1.8% Solar Generation 82 GW Wind Generation 35 GW External Signals Latest intelligence WEATHER Extreme heat expected across southern region Temperatures are expected to remain elevated during afternoon and evening hours, increasing cooling requirements across commercial and residential consumers. Source: Simulated Weather Authority DEMAND Industrial electricity consumption forecast revised upward Electricity consumption from industrial facilities is expected to increase during peak operating hours over the next 24 hours. Source: Simulated Grid Authority GRID Transmission corridor maintenance scheduled Planned maintenance on a major transmission corridor is expected to temporarily reduce power transfer capability during peak hours. Source: Simulated Grid Authority SOLAR Solar generation forecast revised downward Increased cloud cover is expected to reduce solar generation during afternoon hours across multiple renewable generation zones. Source: Simulated Renewable Energy Authority View all external signals → Generation & Reserve Solar 82 GW Wind 35 GW Battery Reserve 65% Simulation Status Normal Market Stable operating conditions with balanced demand and renewable generation. Simulated environment • Renewable Energy Orchestrator",
+      "market_data": {
+        "demand": 165.0,
+        "solarGeneration": 82.0,
+        "windGeneration": 35.0
+      }
+    },
+    {
+      "source": "website",
+      "title": "Electricity Market | Energy Intelligence",
+      "heading": "Electricity Market",
+      "url": "http://localhost:8000/market/electricity-price.html",
+      "content_type": "html",
+      "relevance_score": 40,
+      "matched_keywords": [
+        "solar",
+        "solar generation",
+        "wind",
+        "wind generation",
+        "electricity price",
+        "electricity market",
+        "grid",
+        "transmission",
+        "demand forecast"
+      ],
+      "text": "Electricity Market | Energy Intelligence ENERGY MARKET Electricity Market Current electricity market observations. Dashboard Articles Electricity Market Grid & Transmission Market Snapshot Raw market observations collected from the simulated electricity market authority. Current Electricity Price ₹5.8 INR/kWh Price Change 0% over 1h System Demand 165 GW Current demand Demand Forecast 168 GW Forecast demand Solar Generation 82 GW Current generation Wind Generation 35 GW Current generation Observation Period 10:00 UTC Market observation Data Source Simulated Electricity Market Authority",
+      "market_data": {
+        "electricityPrice": 5.8,
+        "priceChange": 0.0,
+        "demand": 165.0,
+        "demandForecast": 168.0,
+        "solarGeneration": 82.0,
+        "windGeneration": 35.0
+      }
+    },
+    {
+      "source": "website",
+      "title": "Grid & Transmission | Energy Intelligence",
+      "heading": "Grid & Transmission",
+      "url": "http://localhost:8000/grid/transmission.html",
+      "content_type": "html",
+      "relevance_score": 27,
+      "matched_keywords": [
+        "electricity market",
+        "grid",
+        "transmission constraint",
+        "transmission",
+        "grid frequency",
+        "battery"
+      ],
+      "text": "Grid & Transmission | Energy Intelligence GRID INTELLIGENCE Grid & Transmission Current grid operating observations. Dashboard Articles Electricity Market Grid & Transmission Grid Status Raw grid and transmission observations collected from the simulated grid authority. Grid Frequency 50 Hz Current frequency Transmission Constraint No Current transmission state Transmission Status Normal Current status Battery State of Charge 65% Current battery SOC Observation Time 10:00 UTC Grid observation Data Source Simulated Grid Authority",
+      "market_data": {
+        "batteryStateOfCharge": 65.0,
+        "gridFrequency": 50.0,
+        "transmissionConstraint": false
+      }
+    }
+  ]
+}
