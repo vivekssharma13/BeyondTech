@@ -70,6 +70,13 @@ function fleetSummary(now = Date.now()) {
     generatedAt: new Date(now).toISOString(),
     updatedAt: new Date(now).toISOString(),
     liveGenerationMW: Number(totals.generation.toFixed(1)),
+    generationCalculation: 'SUM_OF_CURRENT_FARM_GENERATION_MW',
+    generationByFarm: farms.map(farm => ({
+      farmId: farm.farmId,
+      name: farm.name,
+      currentGenerationMW: farm.currentGenerationMW,
+      source: 'SIMULATED',
+    })),
     forecastGenerationMW: Number(totals.forecast.toFixed(1)),
     installedCapacityMW: totals.capacity,
     fleetUtilizationPct: Number((totals.generation / totals.capacity * 100).toFixed(1)),

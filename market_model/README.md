@@ -123,6 +123,19 @@ python market_model/main.py
 The normal application flow is `GET /api/market/forecast` through the Node
 backend, not direct invocation from React.
 
+## Model run log
+
+Every attempted AI call is appended to `output/model_runs.jsonl`. Each JSON
+Lines record contains the UTC timestamp, run ID, selected model and base URL,
+duration, complete scraper input, validated model output, and sanitized error
+details. API keys are never written to the log.
+
+Pretty-print the latest run with:
+
+```bash
+tail -n 1 market_model/output/model_runs.jsonl | python -m json.tool
+```
+
 ## Implementation notes
 
 - The checked-in website and observations are simulated, not live market data.

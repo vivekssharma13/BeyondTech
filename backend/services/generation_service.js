@@ -69,6 +69,24 @@ function defaultDrivers(farm, results) {
     : [`Wind output is expected to ${direction} over the next 6 hours.`, 'The forecast uses wind conditions and current turbine availability.'];
 }
 
+function predictionInputsForFarm(farm) {
+  if (farm.type !== 'WIND' || !Number.isFinite(farm.weather?.windSpeedMps)) return undefined;
+  const speedMps = farm.weather.windSpeedMps;
+  const gustMps = Number.isFinite(farm.weather.windGustMps) ? farm.weather.windGustMps : speedMps * 1.25;
+  return {
+    // predict.py expects the units declared by solarAndWindData.json (km/h).
+    // Approximate hub-height values from the farm's existing simulated wind
+    // telemetry instead of borrowing an unrelated Bengaluru historical row.
+    wind_speed_10m: speedMps * 3.6 * 0.72,
+    wind_speed_80m: speedMps * 3.6,
+    wind_speed_120m: speedMps * 3.6 * 1.06,
+    wind_gusts_10m: gustMps * 3.6,
+    wind_direction_10m: farm.weather.windDirectionDeg,
+    wind_direction_80m: farm.weather.windDirectionDeg,
+    temperature_2m: farm.weather.temperatureC,
+  };
+}
+
 function createGenerationService({
   predictionRunner = runPrediction,
   cache = createBucketCache(),
@@ -85,6 +103,7 @@ function createGenerationService({
       const rawResults = await Promise.all(HORIZONS.map(hours => predictionRunner({
         // predict.py compares against timezone-naive training timestamps.
         date: new Date(startedAt + hours * 60 * 60 * 1000).toISOString().slice(0, 16),
+        inputs: predictionInputsForFarm(farm),
       })));
       const horizons = rawResults.map((raw, index) => toHorizon(raw, farm, HORIZONS[index]));
       const previous = previousByFarm.get(farm.farmId);
@@ -103,7 +122,7 @@ function createGenerationService({
         generatedAt: new Date(startedAt).toISOString(),
         nextRunAt: new Date((Math.floor(startedAt / 900000) + 1) * 900000).toISOString(),
         source: 'MODEL_WITH_HISTORICAL_INPUTS',
-        weatherInputSource: 'HISTORICAL_DATASET',
+        weatherInputSource: farm.type === 'WIND' ? 'SIMULATED_FARM_WEATHER_WITH_HISTORICAL_DEFAULTS' : 'HISTORICAL_DATASET',
         previousAgentRunId: previous?.agentRunId || null,
         horizons: withChanges,
         drivers: defaultDrivers(farm, horizons),
@@ -147,4 +166,4 @@ function createGenerationService({
   return { getForecast, runPrediction: predictionRunner, cache };
 }
 
-module.exports = { createGenerationService, runPrediction, modelValueToFarmMW, toHorizon };
+module.exports = { createGenerationService, runPrediction, modelValueToFarmMW, toHorizon, predictionInputsForFarm };

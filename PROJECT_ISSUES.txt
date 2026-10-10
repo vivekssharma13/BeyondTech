@@ -41,7 +41,8 @@ MODEL LIMITATIONS REMAINING
 1. Real joblib models run with checked-in historical weather, not live weather.
    The honest source is MODEL_WITH_HISTORICAL_INPUTS.
 2. Farm scaling assumes a normalized 0-1000 reference plant.
-3. Wind training targets are synthetic; some solar targets are derived.
+3. Wind targets use an engineered turbine power curve rather than measured
+   wind-farm SCADA outcomes; some solar targets are radiation-derived.
 4. Five Python processes run per uncached farm forecast; no worker pool exists.
 5. Caches, history, alerts, decisions, and mutations reset with Node.
 6. Accuracy needs persisted realized outcomes; it cannot be claimed today.

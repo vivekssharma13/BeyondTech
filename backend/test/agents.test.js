@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 
-const { createGenerationService } = require('../services/generation_service');
+const { createGenerationService, predictionInputsForFarm } = require('../services/generation_service');
 const { createMarketService } = require('../services/market_service');
 const { optimizeFarm } = require('../services/optimizer_service');
 const { decide } = require('../services/decision_service');
@@ -79,6 +79,16 @@ test('generation forecast uses the existing model runner on success', async () =
   assert.equal(result.weatherInputSource, 'HISTORICAL_DATASET');
   assert.equal(result.horizons.length, 5);
   assert.equal(result.horizons[0].predictedGenerationMW, 90);
+});
+
+test('wind forecasts receive existing farm wind telemetry in model units', () => {
+  const farm = clone(farms.find(item => item.type === 'WIND'));
+  const inputs = predictionInputsForFarm(farm);
+  assert.equal(inputs.wind_speed_80m, farm.weather.windSpeedMps * 3.6);
+  assert.equal(inputs.wind_speed_120m, farm.weather.windSpeedMps * 3.6 * 1.06);
+  assert.equal(inputs.wind_gusts_10m, farm.weather.windGustMps * 3.6);
+  assert.equal(inputs.wind_direction_80m, farm.weather.windDirectionDeg);
+  assert.equal(predictionInputsForFarm(farms.find(item => item.type === 'SOLAR')), undefined);
 });
 
 test('generation and market services reuse their 15-minute cache', async () => {
@@ -229,6 +239,15 @@ test('fleet battery SOC is capacity weighted instead of hardcoded', () => {
   const expected = farms.reduce((sum, farm) => sum + farm.batteryCapacityMWh * farm.batterySocPct, 0)
     / farms.reduce((sum, farm) => sum + farm.batteryCapacityMWh, 0);
   assert.equal(fleetSummary(NOW).storage.socPct, Number(expected.toFixed(1)));
+});
+
+test('fleet current generation equals the sum of every farm reading', () => {
+  const summary = fleetSummary(NOW);
+  const expected = farms.reduce((sum, farm) => sum + farm.currentGenerationMW, 0);
+  const breakdownTotal = summary.generationByFarm.reduce((sum, farm) => sum + farm.currentGenerationMW, 0);
+  assert.equal(summary.liveGenerationMW, Number(expected.toFixed(1)));
+  assert.equal(summary.liveGenerationMW, Number(breakdownTotal.toFixed(1)));
+  assert.equal(summary.generationCalculation, 'SUM_OF_CURRENT_FARM_GENERATION_MW');
 });
 
 test('performance is internally consistent and marks unavailable accuracy', () => {

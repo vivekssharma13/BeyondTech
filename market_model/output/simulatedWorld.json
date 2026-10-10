@@ -1,7 +1,32 @@
 {
-  "generated_at": "2026-10-05T15:21:24.456059+00:00",
-  "total_results": 4,
+  "generated_at": "2026-10-10T12:30:00+00:00",
+  "total_results": 5,
   "results": [
+    {
+      "source": "website",
+      "title": "Demo Grid Event | Energy Intelligence",
+      "heading": "Emergency transmission outage expected to tighten evening electricity supply",
+      "url": "http://localhost:8000/articles/demo-transmission-outage.html",
+      "content_type": "html",
+      "relevance_score": 48,
+      "matched_keywords": [
+        "electricity price",
+        "day-ahead market",
+        "grid",
+        "transmission constraint",
+        "transmission",
+        "electricity demand",
+        "demand forecast"
+      ],
+      "text": "SIMULATED EVENT — DEMO ONLY Emergency transmission outage expected to tighten evening electricity supply Published 10 October 2026 at 18:00 IST Simulated Load Dispatch Centre bulletin An unplanned transmission outage will reduce regional transfer capacity by 2.5 GW from 18:00 to 22:00 IST today. System demand is forecast to reach 172 GW during the affected period. The simulated day-ahead electricity price is expected to rise from ₹5.8/kWh to ₹8.4/kWh during the evening peak. This is a synthetic hackathon event intended to demonstrate how external market intelligence changes the Market Agent result. It is not a real grid notice or trading signal.",
+      "market_data": {
+        "electricityPrice": 5.8,
+        "expectedPeakPrice": 8.4,
+        "demandForecast": 172.0,
+        "transmissionCapacityReductionGW": 2.5,
+        "transmissionConstraint": true
+      }
+    },
     {
       "source": "website",
       "title": "Energy Articles | Energy Intelligence",

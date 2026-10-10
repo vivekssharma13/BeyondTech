@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 node_modules/
 dist/
+market_model/output/model_runs.jsonl
 .DS_Store
 .env
 .env.*

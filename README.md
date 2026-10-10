@@ -161,8 +161,9 @@ for development. Normal clients should rely on the cache.
   than a live weather provider.
 - Model output is scaled from a normalized 0–1000 reference plant to each
   farm's available capacity.
-- Wind training targets are synthetic, and some solar targets are derived from
-  radiation data.
+- Wind targets are engineered from hub-height wind speed, turbine cut-in/rated/
+  cut-out behavior, and air density. They are physically based but are not
+  measured wind-farm SCADA outcomes. Some solar targets are radiation-derived.
 - Runtime history, caches, alert acknowledgements, decisions, and operational
   mutations are process-local and reset when the backend restarts.
 - Forecast accuracy is unavailable until realized generation outcomes are
@@ -188,6 +189,7 @@ To validate the forecasting pipeline separately:
 
 ```bash
 cd model
+python solar_wind_pipeline.py train-wind  # retrain only the wind artifact
 python solar_wind_pipeline.py validate
 ```
 

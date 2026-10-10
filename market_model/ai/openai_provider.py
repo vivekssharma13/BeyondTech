@@ -1,11 +1,14 @@
 import json
 import os
+import time
+import uuid
 from pathlib import Path
 
 from openai import OpenAI
 from dotenv import load_dotenv
 
 from ai.provider import AiProvider
+from services.model_run_logger import write_model_run
 
 ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
@@ -89,8 +92,12 @@ class OpenAIProvider(AiProvider):
             client_options["base_url"] = base_url
         self.client = OpenAI(**client_options)
         self.model = os.getenv("DECISION_AI_MODEL") or os.getenv("MARKET_AI_MODEL") or "gpt-5-mini"
+        self.base_url = base_url
 
     def analyze(self, scraped_data):
+
+        run_id = f"market-ai-{uuid.uuid4()}"
+        started_at = time.monotonic()
 
         prompt = f"""
 You are the Market Agent for a renewable-energy orchestration system.
@@ -123,20 +130,42 @@ SCRAPER OBSERVATIONS:
 {json.dumps(scraped_data, indent=2)}
 """
 
-        response = self.client.responses.create(
-            model=self.model,
-            input=prompt,
-            text={
-                "format": {
-                    "type": "json_schema",
-                    "name": "market_forecast",
-                    "strict": True,
-                    "schema": MARKET_SCHEMA,
-                }
-            },
-        )
         try:
+            response = self.client.responses.create(
+                model=self.model,
+                input=prompt,
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "market_forecast",
+                        "strict": True,
+                        "schema": MARKET_SCHEMA,
+                    }
+                },
+            )
             parsed = json.loads(response.output_text)
-        except (TypeError, json.JSONDecodeError) as error:
-            raise ValueError("Market model returned malformed JSON.") from error
-        return validate_market_result(parsed)
+            result = validate_market_result(parsed)
+        except Exception as error:
+            write_model_run(
+                run_id=run_id,
+                status="FAILED",
+                model=self.model,
+                base_url=self.base_url,
+                duration_ms=round((time.monotonic() - started_at) * 1000),
+                model_input=scraped_data,
+                error={"type": type(error).__name__, "message": str(error)},
+            )
+            if isinstance(error, (TypeError, json.JSONDecodeError)):
+                raise ValueError("Market model returned malformed JSON.") from error
+            raise
+
+        write_model_run(
+            run_id=run_id,
+            status="COMPLETED",
+            model=self.model,
+            base_url=self.base_url,
+            duration_ms=round((time.monotonic() - started_at) * 1000),
+            model_input=scraped_data,
+            model_output=result,
+        )
+        return result

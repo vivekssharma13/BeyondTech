@@ -1,5 +1,13 @@
 [
     {
+      "id": "article-demo-001",
+      "title": "Emergency transmission outage expected to tighten evening electricity supply",
+      "category": "GRID",
+      "description": "DEMO EVENT: An unplanned transmission outage will reduce regional transfer capacity by 2.5 GW from 18:00 to 22:00 IST today. System demand is forecast to reach 172 GW and the simulated day-ahead electricity price is expected to rise from ₹5.8/kWh to ₹8.4/kWh during the evening peak.",
+      "source": "Simulated Load Dispatch Centre",
+      "publishedAt": "2026-10-10T12:30:00Z"
+    },
+    {
       "id": "article-001",
       "title": "Extreme heat expected across southern region",
       "category": "WEATHER",

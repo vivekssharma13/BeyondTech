@@ -1,0 +1,44 @@
+.farm-explorer-page { position: relative; min-height: calc(100vh - 124px); animation: explorer-enter .45s ease both; }
+.explorer-heading { position: absolute; z-index: 4; top: 22px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
+.explorer-heading span { color: #147f85; font-size: 10px; font-weight: 900; letter-spacing: .16em; }
+.explorer-heading h1 { margin: 5px 0 3px; color: #163c57; font-size: clamp(24px, 3vw, 38px); letter-spacing: -.045em; text-shadow: 0 2px 18px #eaf8ff; }
+.explorer-heading p { margin: 0; color: #427084; font-size: 12px; }
+.explorer-counts { display: flex; gap: 7px; }
+.explorer-counts span { display: flex; align-items: center; gap: 5px; padding: 8px 10px; border: 1px solid #fff9; border-radius: 999px; background: #f8fcffe8; box-shadow: 0 8px 25px #35758b1a; color: #24576b; letter-spacing: .03em; }
+.explorer-stage { position: relative; min-height: calc(100vh - 124px); overflow: hidden; border: 1px solid #ffffff80; border-radius: 16px; background: linear-gradient(#bfe8ff, #eaf8ff); box-shadow: inset 0 0 70px #fff8, 0 18px 60px #07142430; opacity: 0; transform: translateY(8px) scale(.99); transition: opacity .55s ease, transform .65s cubic-bezier(.2,.8,.2,1); }
+.explorer-stage.is-ready { opacity: 1; transform: none; }
+.farm-world-canvas { position: absolute !important; inset: 0; width: 100% !important; height: 100% !important; }
+.explorer-controls { position: absolute; z-index: 4; right: 18px; bottom: 20px; display: flex; gap: 7px; }
+.explorer-controls button { display: inline-flex; align-items: center; gap: 7px; min-width: 38px; height: 38px; padding: 0 11px; border: 1px solid #fff9; border-radius: 9px; color: #173b70; background: #f8fcffee; box-shadow: 0 8px 28px #173b7020; transition: transform .18s, background .18s; }
+.explorer-controls button:hover { transform: translateY(-2px); background: #fff; }
+.explorer-controls span { font-size: 10px; font-weight: 800; }
+.explorer-help { position: absolute; z-index: 4; left: 18px; bottom: 18px; display: flex; align-items: center; gap: 5px; padding: 8px 10px; border: 1px solid #fff9; border-radius: 10px; background: #f8fcffdf; box-shadow: 0 8px 28px #173b7018; pointer-events: none; }
+.explorer-help p { margin: 0 0 0 5px; color: #42697d; font-size: 9px; }
+.explorer-key { display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #b7d4de; border-bottom-width: 2px; border-radius: 4px; color: #173b70; background: #fff; font-size: 8px; font-weight: 900; }
+.explorer-source { position: absolute; z-index: 4; top: 112px; left: 25px; padding: 5px 8px; border-radius: 5px; color: #326879; background: #eaf8ffcc; font-size: 8px; font-weight: 900; letter-spacing: .12em; pointer-events: none; }
+.explorer-hover-card { position: fixed; z-index: 30; width: 254px; padding: 14px; border: 1px solid #ffffffb5; border-radius: 13px; color: #173b4d; background: #f8fcfff0; box-shadow: 0 18px 50px #173b7042; backdrop-filter: blur(16px); pointer-events: none; animation: hover-card-in .16s ease both; }
+.explorer-card-title { display: flex; gap: 9px; align-items: center; padding-bottom: 11px; border-bottom: 1px solid #cde1e8; }
+.explorer-card-title > div { min-width: 0; }
+.explorer-card-title strong, .explorer-card-title span { display: block; }
+.explorer-card-title strong { overflow: hidden; color: #173b70; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+.explorer-card-title span { margin-top: 3px; color: #557789; font-size: 9px; }
+.explorer-type-icon { display: grid !important; place-items: center; flex: 0 0 34px; height: 34px; border-radius: 9px; color: #173b70 !important; background: #ffd16655; }
+.explorer-type-icon.wind { color: #147f85 !important; background: #36d6e733; }
+.explorer-hover-card dl { display: grid; gap: 7px; margin: 11px 0; }
+.explorer-hover-card dl div { display: flex; justify-content: space-between; gap: 12px; }
+.explorer-hover-card dt { color: #668594; font-size: 10px; }
+.explorer-hover-card dd { margin: 0; color: #173b70; font-size: 10px; font-weight: 800; text-transform: capitalize; }
+.explorer-health.healthy { color: #188363; }.explorer-health.warning { color: #b36d16; }.explorer-health.critical { color: #c54949; }
+.explorer-hover-card > p { margin: 0 0 7px; color: #b36d16; font-size: 8px; font-weight: 900; letter-spacing: .12em; }
+.explorer-hover-card > small { color: #168a91; font-size: 9px; font-weight: 800; }
+.explorer-loading, .explorer-empty { min-height: calc(100vh - 124px); display: grid; place-items: center; align-content: center; gap: 8px; text-align: center; }
+.explorer-canvas-error { position: absolute; z-index: 7; inset: 0; color: #173b70; background: linear-gradient(#bfe8ff, #eaf8ff); }
+.explorer-loading { position: absolute; z-index: 9; inset: 0; color: var(--text); background: var(--bg); }
+.explorer-loading small, .explorer-empty p { max-width: 440px; color: var(--muted); font-size: 11px; }
+.explorer-empty svg { color: var(--cyan); }.explorer-empty h2 { margin: 5px 0 0; color: var(--text); }.explorer-empty p { margin: 0; line-height: 1.6; }
+.explorer-loader { display: grid; place-items: center; width: 52px; height: 52px; border: 2px solid #ffd16655; border-top-color: #ffd166; border-radius: 50%; color: #ffd166; animation: explorer-spin 1.4s linear infinite; }
+@keyframes explorer-spin { to { transform: rotate(360deg); } }
+@keyframes explorer-enter { from { opacity: 0; } }
+@keyframes hover-card-in { from { opacity: 0; transform: translateY(5px) scale(.97); } }
+@media (max-width: 760px) { .farm-explorer-page, .explorer-stage, .explorer-loading, .explorer-empty { min-height: calc(100vh - 100px); }.explorer-heading { top: 16px; left: 16px; right: 16px; }.explorer-heading p { display: none; }.explorer-counts { flex-direction: column; }.explorer-help { right: 15px; left: 15px; justify-content: center; }.explorer-help .explorer-key { display: none; }.explorer-controls { bottom: 62px; }.explorer-source { top: 90px; left: 16px; } }
+@media (prefers-reduced-motion: reduce) { .farm-explorer-page, .explorer-stage, .explorer-hover-card { animation: none; transition: none; } }
