@@ -8,9 +8,9 @@ The application does **not** control real infrastructure. Current farm
 telemetry, operational state, alerts, and performance data are deterministic
 simulations and are labeled accordingly in the API and dashboard.
 
-![Renewable Energy AI Platform Architecture](https://github.com/user-attachments/assets/06bed673-778e-4fad-a29e-65190ec2ce6a)
-
 ## Architecture
+
+<img width="1586" height="992" alt="BeyondTech Renewable Energy AI Architecture" src="https://github.com/user-attachments/assets/4fe4ac0f-c8e9-443f-a077-7978efe68b0d" />
 
 The repository contains exactly four agents:
 
