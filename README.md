@@ -6,7 +6,7 @@ The platform consists of three agents — **Forecast, Market, and Optimization**
 
 ## Architecture
 
-![BeyondTech Renewable Energy Platform Architecture](docs/architecture.png)
+<img width="1536" height="1024" alt="Renewable Energy AI Platform Architecture" src="https://github.com/user-attachments/assets/06bed673-778e-4fad-a29e-65190ec2ce6a" />
 
 The platform follows this workflow:
 
