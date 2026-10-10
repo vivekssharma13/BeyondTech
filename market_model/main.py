@@ -1,15 +1,20 @@
-from app.agent import MarketAgent
-
+import json
+import sys
 
 def main():
+    from agent import MarketAgent
 
     agent = MarketAgent()
 
     result = agent.run()
 
-    print("\n===== MARKET AGENT RESULT =====\n")
-    print(result)
+    print(json.dumps(result, separators=(",", ":")))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        print(f"Market Agent failed: {error}", file=sys.stderr)
+        print(json.dumps({"error": str(error)}, separators=(",", ":")))
+        raise SystemExit(1)

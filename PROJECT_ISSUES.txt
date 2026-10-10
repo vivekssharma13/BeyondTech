@@ -1,0 +1,63 @@
+RENEWABLE ENERGY PLATFORM - STABILIZATION AUDIT
+Updated: 2026-10-09
+
+FIXED ISSUES
+============
+1. Next-run time/countdown now comes from forecast nextRunAt and displays IST.
+2. Fake fleet comparison percentages were replaced by computed variance or
+   honest descriptions. Fleet forecast now sums each farm's current 6h result.
+3. Fleet battery SOC/reserve are capacity-weighted and battery power is summed.
+4. Alert count, topbar run identity, timestamps, and freshness are API-driven.
+5. Core dashboard data is refreshed every 45 seconds.
+6. Farm detail and Forecast & AI use the selected farm's forecast and history.
+7. Forecast run metadata, changes, confidence, drivers, revision state, source,
+   and timeline use API data. Unsupported accuracy displays N/A.
+8. The duplicate direct POST /api/predict card was removed from normal UI.
+9. Performance totals, losses, revenue, and farm rows share one consistent API
+   response. Accuracy remains N/A because outcomes are not persisted.
+10. Generation history honors range=12h/24h/72h and interval=15m/1h.
+11. Alerts are derived from grid, availability, and battery thresholds.
+12. /api/health checks model artifacts/Python and market-key configuration.
+13. /api/freshness returns structured timestamps and source classifications.
+14. Decisions are idempotent; repeats return 409 DECISION_ALREADY_APPLIED.
+    Accepted BUY/SELL updates simulated grid, battery, and revenue state.
+15. DECISION_AI_* variables now configure the Market Agent as documented.
+16. Market observations/drivers are deduplicated and scraper resources close.
+
+STILL SIMULATED (NOT LIVE)
+==========================
+1. Farm generation, availability, grid, storage, weather, equipment, and
+   starting revenue are fixed demo state in backend/api_dashboard_data.js.
+   The 310.1 MW total is computed from those values, but is not live telemetry.
+2. Generation history is a deterministic generated solar/wind curve.
+3. Performance is extrapolated from simulated farm state, not meter history.
+4. Alerts are rule-derived from simulated state.
+5. Operations and accepted decisions mutate in-memory simulation only.
+6. The checked-in market website and scraper artifact are simulated. Provider
+   failure is surfaced as MOCK_FALLBACK.
+
+MODEL LIMITATIONS REMAINING
+===========================
+1. Real joblib models run with checked-in historical weather, not live weather.
+   The honest source is MODEL_WITH_HISTORICAL_INPUTS.
+2. Farm scaling assumes a normalized 0-1000 reference plant.
+3. Wind training targets are synthetic; some solar targets are derived.
+4. Five Python processes run per uncached farm forecast; no worker pool exists.
+5. Caches, history, alerts, decisions, and mutations reset with Node.
+6. Accuracy needs persisted realized outcomes; it cannot be claimed today.
+7. Previous-run deltas need two successful runs in the same backend process.
+8. Market analysis needs a configured provider and current crawler artifact.
+
+REMAINING UI/PRESENTATION ISSUES
+================================
+1. The legacy port-3000 developer page retains the low-level prediction
+   workflow, clearly labeled as historical-input developer testing.
+2. Vite reports a roughly 708 kB production chunk warning.
+3. Browser-level interaction tests are not configured.
+
+TEST COVERAGE
+=============
+Backend tests cover model/market success and fallback, cache behavior,
+optimizer constraints, decision scenarios, quantity ownership, invalid input,
+range/interval handling, weighted SOC, performance consistency, and action
+idempotency. The frontend production build is verified.

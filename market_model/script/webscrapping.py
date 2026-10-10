@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-OUTPUT_FILE=Path("output/simulatedWorld.json")
+OUTPUT_FILE = Path(__file__).resolve().parents[1] / "output" / "simulatedWorld.json"
 MAX_DEPTH=2
 MAX_PAGES_PER_SOURCE=25
 REQUEST_TIMEOUT=20
@@ -266,6 +266,10 @@ class Webscrapping:
         chrome_options.add_argument("--window-size=1920,1080")
 
         self.driver = webdriver.Chrome(options=chrome_options)
+
+    def close(self):
+        self.session.close()
+        self.driver.quit()
 
     def fetch_rendered_page(self, url):
         try:
@@ -991,19 +995,17 @@ def main():
 
     all_results = []
 
-
-    for source in GOVERNMENT_SOURCES:
-
-        results = scraper.crawl(
-            source_name=source["name"],
-            start_url=source["url"],
-            max_depth=MAX_DEPTH,
-            max_pages=MAX_PAGES_PER_SOURCE
-        )
-
-        all_results.extend(
-            results
-        )
+    try:
+        for source in GOVERNMENT_SOURCES:
+            results = scraper.crawl(
+                source_name=source["name"],
+                start_url=source["url"],
+                max_depth=MAX_DEPTH,
+                max_pages=MAX_PAGES_PER_SOURCE
+            )
+            all_results.extend(results)
+    finally:
+        scraper.close()
 
 
     # Remove duplicate URLs.

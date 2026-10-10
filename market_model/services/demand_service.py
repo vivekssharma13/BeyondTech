@@ -1,3 +1,5 @@
+"""Legacy prototype; not used by the active Market Agent or decision pipeline."""
+
 class DemandService:
     def get_current_demand(self):
         return {

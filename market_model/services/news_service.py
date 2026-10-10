@@ -1,5 +1,7 @@
 import feedparser
 
+"""Legacy prototype; not used by the active Market Agent or decision pipeline."""
+
 class NewsService:
     def __init__(self):
         self.feedURLS = [

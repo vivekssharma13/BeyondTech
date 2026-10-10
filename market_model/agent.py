@@ -1,56 +1,22 @@
-from openai import OpenAI
-import json
-from app.services.news_service import NewsService
-from app.ai.openai_provider import OpenAIProvider
-from app.services.scraper_output_service import ScraperOutputService
+from ai.openai_provider import OpenAIProvider
+from services.scraper_output_service import ScraperOutputService
 
 class MarketAgent:
-    def __init__(self):
-        # self.news_service= NewsService()
-        self.openai_provider=OpenAIProvider()
-        self.scraper_service = ScraperOutputService()
+    def __init__(self, openai_provider=None, scraper_service=None):
+        self.openai_provider = openai_provider or OpenAIProvider()
+        self.scraper_service = scraper_service or ScraperOutputService()
 
     def run(self):
-
-        # 1. Get raw observations from the scraper
         scraped_data = self.scraper_service.load()
-
-        # 2. Send those observations to the AI for market analysis
-        result = self.openai_provider.analyze(scraped_data)
-
-        return result
-    
-#     def analyze(self):
-#         articles=self.news_service.getRelevantNews()
-#         news_text=""
-#         for index,article in enumerate(articles, index=1):
-#             news_text +=f"""
-# ARTICLE{index}
-# Title:
-# {article["title"]}
-
-# Summary:
-# {article["summary"]}
-
-# Published:
-# {article["published"]}
-
-# URL:
-# {article["link"]}
-
-# -------------------------
-# """
-#         result= self.openai_provider.analyze(self, news_text)
-#         return result
-
-    # def analyze(
-    #         self,
-    #         electricty_price,
-    #         demand_mw,
-    #         battery_soc
-    # ):
-    #     return {
-    #         "electricity_price": electricty_price,
-    #         "demand_mw": demand_mw,
-    #         "battery_soc": battery_soc
-    #     }
+        results = scraped_data.get("results") if isinstance(scraped_data, dict) else None
+        if isinstance(results, list):
+            seen = set()
+            unique = []
+            for item in results:
+                fingerprint = " ".join(str(item.get(key, "")).lower().split() for key in ("title", "description", "text"))
+                if fingerprint and fingerprint in seen:
+                    continue
+                seen.add(fingerprint)
+                unique.append(item)
+            scraped_data = {**scraped_data, "results": unique, "total_results": len(unique)}
+        return self.openai_provider.analyze(scraped_data)

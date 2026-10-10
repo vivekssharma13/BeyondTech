@@ -1,11 +1,18 @@
 const apiBase = import.meta.env.VITE_API_BASE_URL || '/api'
 
-async function apiGet(path) {
-  const response = await fetch(`${apiBase}${path}`)
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${apiBase}${path}`, options)
   const result = await response.json()
   if (!response.ok || result.error) throw new Error(result.error?.message || result.error || `Request failed: ${path}`)
   return result
 }
+
+const apiGet = (path) => apiRequest(path)
+const apiWrite = (path, method, body) => apiRequest(path, {
+  method,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body),
+})
 
 function normalizeFarm(farm) {
   const weather = farm.type === 'SOLAR'
@@ -19,11 +26,11 @@ async function getFarms() {
   return result.farms.map(normalizeFarm)
 }
 
-async function getForecast(farmId = 'sunpeak') {
-  const [forecast, generation] = await Promise.all([apiGet(`/farms/${farmId}/forecast`), apiGet(`/farms/${farmId}/generation?range=24h&interval=15m`)])
+async function getForecast(farmId = 'sunpeak', range = '24h') {
+  const [forecast, generation] = await Promise.all([apiGet(`/farms/${farmId}/forecast`), apiGet(`/farms/${farmId}/generation?range=${range}&interval=15m`)])
   return {
-    horizons: forecast.horizons.map((item) => ({ label: `NEXT ${item.horizon.toUpperCase()}`, value: item.predictedGenerationMW, change: 0, confidence: item.confidencePct, range: `${item.lowerBoundMW}–${item.upperBoundMW} MW` })),
-    series: generation.data.map((item) => ({ label: item.timestamp.slice(11, 16), actual: item.actualMW, forecast: item.forecastMW, low: item.forecastMW, high: item.forecastMW })),
+    horizons: forecast.horizons.map((item) => ({ label: `NEXT ${item.horizon.toUpperCase()}`, horizon: item.horizon, value: item.predictedGenerationMW, change: item.changePct, confidence: item.confidencePct, range: `${item.lowerBoundMW}–${item.upperBoundMW} MW` })),
+    series: generation.data.map((item) => ({ label: item.timestamp.slice(11, 16), actual: item.actualMW, forecast: item.forecastMW })),
     metadata: forecast,
   }
 }
@@ -41,11 +48,18 @@ export const energyService = {
   getFarm: (farmId) => apiGet(`/farms/${farmId}`).then(normalizeFarm),
   getGeneration: (farmId, range = '24h') => apiGet(`/farms/${farmId}/generation?range=${range}&interval=15m`),
   getForecast,
-  getPerformance: () => apiGet('/performance'),
+  getPerformance: (range = 'today', farmId) => apiGet(`/performance?range=${range}${farmId ? `&farmId=${farmId}` : ''}`),
   getAlerts: () => apiGet('/alerts').then((result) => result.alerts),
   getAgentRuns: () => apiGet('/agent-runs').then((result) => result.runs),
-  getMarketForecast: () => apiGet('/market/forecast').then((data) => ({ ...data, current: data.currentPricePerMWh, oneHour: data.forecasts.find((item) => item.horizon === '1h').predictedPricePerMWh, sixHour: data.forecasts.find((item) => item.horizon === '6h').predictedPricePerMWh, day: data.forecasts.find((item) => item.horizon === '24h').predictedPricePerMWh, peak: data.expectedPeakPricePerMWh, peakTime: data.expectedPeakAt.slice(11, 16), confidence: data.forecasts[0].confidencePct })),
+  getMarketForecast: () => apiGet('/market/forecast').then((data) => ({ ...data, current: data.currentPricePerMWh, oneHour: data.forecasts.find((item) => item.horizon === '1h').predictedPricePerMWh, sixHour: data.forecasts.find((item) => item.horizon === '6h').predictedPricePerMWh, day: data.forecasts.find((item) => item.horizon === '24h').predictedPricePerMWh, peak: data.expectedPeakPricePerMWh, peakTime: data.expectedPeakAt ? new Date(data.expectedPeakAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : 'N/A', confidence: data.forecasts[0].confidencePct })),
   getOptimizerRecommendations: (farmId) => apiGet(`/optimizer/recommendations${farmId ? `?farmId=${farmId}` : ''}`),
+  getDecisionRecommendation: (farmId) => apiGet(`/decision/recommendation${farmId ? `?farmId=${farmId}` : ''}`),
+  actOnDecision: (decisionId, action) => apiWrite(`/decision/recommendation/${decisionId}/action`, 'POST', { action }),
+  getOperations: (farmId) => apiGet(`/farms/${farmId}/operations`),
+  updateOperations: (farmId, updates) => apiWrite(`/farms/${farmId}/operations`, 'PATCH', updates),
+  updateAlert: (alertId, acknowledged) => apiWrite(`/alerts/${alertId}`, 'PATCH', { acknowledged }),
+  getActivity: (farmId) => apiGet(`/activity${farmId ? `?farmId=${farmId}` : ''}`).then((result) => result.activity),
   getFreshness: () => apiGet('/freshness'),
+  getHealth: () => apiGet('/health'),
   getModelPrediction,
 }

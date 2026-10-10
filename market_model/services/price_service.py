@@ -1,3 +1,5 @@
+"""Legacy prototype; not used by the active Market Agent or decision pipeline."""
+
 class PriceService:
 
     def get_current_price(self):

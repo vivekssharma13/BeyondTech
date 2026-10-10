@@ -48,8 +48,8 @@ document.getElementById('prediction-form').addEventListener('submit', async even
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Prediction failed');
-    document.getElementById('solar-output').textContent = `${result.solar_power.toFixed(2)} AC units`;
-    document.getElementById('wind-output').textContent = `${result.wind_power.toFixed(2)} AC units`;
+    document.getElementById('solar-output').textContent = `${result.solar_power.toFixed(2)} model units`;
+    document.getElementById('wind-output').textContent = `${result.wind_power.toFixed(2)} model units`;
     document.getElementById('results').hidden = false;
     const sourceMessage = result.used_nearest_weather
       ? `Weather from ${result.weather_date_used} was used because the requested date is outside the dataset.`

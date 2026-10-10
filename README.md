@@ -1,70 +1,95 @@
-# BeyondTech — Renewable Energy Intelligence Platform
+# BeyondTech Renewable Energy Platform
 
-An AI-powered renewable energy platform that combines solar and wind generation forecasting, market intelligence, and optimization recommendations to support smarter energy operations.
+BeyondTech is a hackathon control-room application for a simulated fleet of
+solar and wind farms. It combines generation forecasting, market analysis,
+physical feasibility rules, and an explainable BUY/SELL/HOLD decision.
 
-The platform consists of three agents — **Forecast, Market, and Optimization** — backed by a Python forecasting pipeline, a Node.js API, and a React operations dashboard.
+The application does **not** control real infrastructure. Current farm
+telemetry, operational state, alerts, and performance data are deterministic
+simulations and are labeled accordingly in the API and dashboard.
+
+![Renewable Energy AI Platform Architecture](https://github.com/user-attachments/assets/06bed673-778e-4fad-a29e-65190ec2ce6a)
 
 ## Architecture
 
-<img width="1536" height="1024" alt="Renewable Energy AI Platform Architecture" src="https://github.com/user-attachments/assets/06bed673-778e-4fad-a29e-65190ec2ce6a" />
+The repository contains exactly four agents:
 
-The platform follows this workflow:
+1. **Generation Forecast Agent** — runs the existing Python solar and wind
+   models for 1h, 6h, 24h, 48h, and 72h forecasts.
+2. **Market Agent** — analyzes scraped market observations and returns price
+   forecasts, risks, and drivers. It never selects an operational action.
+3. **Optimizer Agent** — applies battery, import, export, reserve, availability,
+   and output constraints to produce feasible BUY, SELL, and HOLD quantities.
+4. **Decision Agent** — deterministically scores the feasible candidates and
+   chooses the final action. The selected quantity always comes from the
+   Optimizer.
 
-1. **Collect:** Gather historical generation data, weather information, electricity prices, demand, grid conditions, battery information, and external news.
-2. **Forecast:** Predict solar and wind generation across multiple time horizons using trained machine-learning models.
-3. **Analyze:** Interpret market conditions and relevant external events.
-4. **Optimize:** Combine forecast and market outputs to recommend whether to buy, sell, or hold energy.
-5. **Apply confidence gate:** Compare decision confidence against a configured threshold. Lower-confidence decisions require operator review.
-6. **Visualize:** Deliver forecasts, recommendations, alerts, and farm-level information through the dashboard.
+```text
+Generation Forecast ──┐
+                      ├──> Optimizer ──> Candidate strategies ──> Decision Agent
+Market Forecast ──────┘                                      BUY / SELL / HOLD
+```
 
-## Key Components
+Generation and market results are cached in memory for the current 15-minute
+bucket. Model or provider failures return explicitly labeled backend fallback
+data. Accepted decisions update in-memory simulation state only.
 
-| Component | Responsibility | Technology |
-|---|---|---|
-| Forecast Agent | Predict solar and wind generation and quantify uncertainty | Python, scikit-learn |
-| Market Agent | Analyze electricity prices, demand, grid constraints, battery conditions, and external news | Python, OpenAI API, web scraping |
-| Optimization Agent | Combine forecast and market intelligence to generate recommendations | Decision and optimization logic |
-| Backend API | Expose predictions, farm information, alerts, and recommendations | Node.js |
-| Operations Dashboard | Display fleet status, farm details, historical statistics, forecasts, and decisions | React, Vite |
+## Data source labels
 
-## Forecasting Model
+| Label | Meaning |
+| --- | --- |
+| `LIVE` | Current external data. No existing endpoint currently qualifies. |
+| `MODEL` | Model inference using current inputs. Reserved for future use. |
+| `MODEL_WITH_HISTORICAL_INPUTS` | Real model inference using the checked-in historical weather dataset. |
+| `MARKET_AGENT` | Successful analysis by the configured market model provider. |
+| `SIMULATED` | Deterministic hackathon scenario or operational state. |
+| `MOCK_FALLBACK` | Backend-owned fallback returned after a model or agent failure. |
 
-The forecasting pipeline uses **eight years of historical solar and wind data** to train models for renewable generation prediction.
+## Repository structure
 
-Supported forecast horizons:
+```text
+backend/       Node.js HTTP API, agent services, simulation state, and tests
+frontend/      React/Vite operations dashboard
+model/         Existing Python training and prediction pipeline
+market_model/  Market crawler, simulated source site, and Market Agent
+```
 
-- 15 minutes and 1 hour — highest priority
-- 6 hours
-- 24 hours
-- 48 hours
-- 72 hours
+The Node backend is the application API. It invokes Python through service
+adapters; the React frontend does not invoke Python or load mock files directly.
 
-The inference pipeline provides point predictions, split-conformal prediction intervals, confidence information, weather fallback metadata, and physical zero-output rules.
+## Local setup
 
-## Market Intelligence
+### 1. Python dependencies
 
-The Market Agent collects and interprets relevant external information, including:
+From the repository root:
 
-- Electricity prices and price movements
-- Electricity demand and consumption
-- Grid capacity and transmission constraints
-- Battery state of charge and storage requirements
-- Weather events, including cyclones and extreme conditions
-- Relevant external news and market developments
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install pandas numpy scikit-learn joblib openai python-dotenv requests beautifulsoup4 lxml selenium pypdf feedparser
+```
 
-Government websites provide controlled market scenarios and articles. The `scraper` extracts relevant observations into structured output, which the Market Agent analyzes.
+### 2. Environment configuration
 
-## Optimization and Decision-Making
+```bash
+cp .env.example .env
+```
 
-The Optimization Agent combines generation forecasts with market intelligence to produce **BUY, SELL, or HOLD** recommendations.
+The market provider is optional. Without a key, the application continues with
+`MOCK_FALLBACK` market data and `/api/health` reports
+`CONFIGURATION_REQUIRED`.
 
-Each recommendation can include the proposed action, energy quantity where supported, confidence, and rationale.
+```dotenv
+DECISION_AGENT_MODE=RULE_BASED
+DECISION_AI_API_KEY=
+DECISION_AI_BASE_URL=https://openrouter.ai/api/v1
+DECISION_AI_MODEL=
+```
 
-A configurable confidence threshold determines whether a recommendation is eligible for autonomous action or requires human review. Real-world execution must also satisfy operating constraints, authorization, and safety checks.
+`MARKET_AI_*` and standard `OPENAI_*` names remain supported for compatibility.
+Never commit credentials.
 
-## Run Locally
-
-### 1. Start the backend
+### 3. Start the backend
 
 ```bash
 cd backend
@@ -74,9 +99,9 @@ npm start
 
 The backend runs at `http://localhost:3000`.
 
-### 2. Start the frontend
+### 4. Start the frontend
 
-In a separate terminal:
+In another terminal:
 
 ```bash
 cd frontend
@@ -84,76 +109,91 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` or the URL printed by Vite. The Vite proxy forwards `/api/*` requests to the backend.
+Open `http://localhost:5173`. Vite proxies `/api/*` to the backend.
 
-### 3. Set up the Python environment
+## Decision model
 
-From the repository root:
+The Decision Agent uses normalized `0–100` rule scores. These scores are
+explainable hackathon heuristics, not calibrated probabilities.
+
+| Candidate | Signals and default weights |
+| --- | --- |
+| BUY | Future price upside 30%, battery capacity 20%, generation shortfall 20%, import headroom 15%, forecast confidence 15% |
+| SELL | Current-price opportunity 30%, reserve margin 20%, export headroom 20%, generation surplus 15%, forecast confidence 15% |
+| HOLD | Forecast uncertainty 30%, weak price spread 25%, tight reserve 20%, conflicting signals 15%, candidate closeness 10% |
+
+Infeasible candidates are removed before scoring. HOLD is preferred when BUY
+and SELL scores are close, forecast confidence is low, or market risk is high.
+Weights and thresholds are defined in
+`backend/services/decision_service.js`.
+
+## API reference
+
+| Endpoint | Method | Primary source | Purpose |
+| --- | --- | --- | --- |
+| `/api/health` | GET | Runtime readiness | Python, artifact, provider, and agent status |
+| `/api/fleet` | GET | `SIMULATED` | Fleet generation, grid, storage, revenue, and alert summary |
+| `/api/farms` | GET | `SIMULATED` | All farm state |
+| `/api/farms/:farmId` | GET | `SIMULATED` | One farm |
+| `/api/farms/:farmId/generation` | GET | `SIMULATED` | Generation history; supports `range=12h/24h/72h` and `interval=15m/1h` |
+| `/api/farms/:farmId/forecast` | GET | Model or fallback | Cached generation forecast |
+| `/api/market/forecast` | GET | Market Agent or fallback | Market-only price intelligence |
+| `/api/optimizer/recommendations` | GET | `SIMULATED` rules | Feasible candidates; optional `farmId` |
+| `/api/decision/recommendation` | GET | `SIMULATED` rules | Final decision; optional `farmId` |
+| `/api/decision/recommendation/:decisionId/action` | POST | `SIMULATED` | Idempotent `ACCEPT` or `DISMISS` action |
+| `/api/farms/:farmId/operations` | GET, PATCH | `SIMULATED` | Read or update validated operating settings |
+| `/api/alerts` | GET | `SIMULATED` | State-derived alerts |
+| `/api/alerts/:alertId` | PATCH | In-memory state | Acknowledge or reopen an alert |
+| `/api/performance` | GET | `SIMULATED` | Supports `range=today/7d/30d/ytd` and optional `farmId` |
+| `/api/agent-runs` | GET | Runtime history | Recent agent executions |
+| `/api/activity` | GET | Runtime history | Agent and operator activity |
+| `/api/freshness` | GET | Mixed | Source timestamps and next-run metadata |
+| `/api/predict` | POST | Model | Low-level developer prediction endpoint |
+
+Forecast, market, optimizer, and decision GET routes accept `?refresh=true`
+for development. Normal clients should rely on the cache.
+
+## Important limitations
+
+- Farm telemetry, weather, equipment, grid, storage, alerts, performance, and
+  financial state are simulated.
+- Generation inference uses historical or nearest weather observations rather
+  than a live weather provider.
+- Model output is scaled from a normalized 0–1000 reference plant to each
+  farm's available capacity.
+- Wind training targets are synthetic, and some solar targets are derived from
+  radiation data.
+- Runtime history, caches, alert acknowledgements, decisions, and operational
+  mutations are process-local and reset when the backend restarts.
+- Forecast accuracy is unavailable until realized generation outcomes are
+  persisted and joined to prior forecasts.
+- The checked-in market website and crawler output are simulated inputs.
+
+See [PROJECT_ISSUES.txt](PROJECT_ISSUES.txt) for the detailed stabilization
+audit and remaining issues. See [market_model/README.md](market_model/README.md)
+for the market crawler and provider workflow.
+
+## Tests
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install pandas scikit-learn joblib
-```
+cd backend
+npm test
 
-Install any additional dependencies required by the model and Market Agent.
-
-### 4. Validate the model
-
-```bash
-cd model
-python solar_wind_pipeline.py
-python solar_wind_pipeline.py validate
-```
-
-### 5. Configure the Market Agent
-
-Create a local `.env` file and supply your own OpenAI API key if required by the current implementation.
-
-Run the simulated website, scraper, and Market Agent using the commands documented in their respective scripts.
-
-## API Endpoints
-
-| Endpoint | Purpose |
-|---|---|
-| `/api/health` | Backend health |
-| `/api/fleet` | Fleet overview |
-| `/api/farms` | Available farms |
-| `/api/farms/:farmId` | Farm details |
-| `/api/farms/:farmId/generation` | Farm generation |
-| `/api/farms/:farmId/forecast` | Farm forecasts |
-| `/api/market/forecast` | Market forecast |
-| `/api/optimizer/recommendations` | Optimization recommendations |
-| `/api/alerts` | Operational alerts |
-| `/api/agent-runs` | Agent execution information |
-| `/api/performance` | Performance information |
-| `/api/freshness` | Data freshness |
-| `/api/predict` | Prediction interface |
-
-## Validation
-
-```bash
-cd frontend
+cd ../frontend
 npm run lint
 npm run build
 ```
 
-Validate the forecasting pipeline with:
+To validate the forecasting pipeline separately:
 
 ```bash
 cd model
 python solar_wind_pipeline.py validate
 ```
 
-## Security and Data Handling
+## Security and safety
 
-- Never commit `.env`, API keys, or other secrets.
-- Exclude virtual environments, `node_modules/`, `__pycache__/`, and temporary files.
-- Keep credentials in environment variables.
-- Treat simulated market observations separately from verified live data.
-- Require appropriate safety checks and authorization before executing real-world energy transactions.
-
-## Expected Impact
-
-BeyondTech aims to improve renewable generation visibility, anticipate market and grid changes, support battery planning, and enable more transparent, confidence-aware energy decisions.
-
+- Keep API keys and `.env` files out of version control.
+- Treat all accepted decisions as simulation events, never physical dispatch.
+- Real-world execution would require authenticated control interfaces,
+  authorization, audit persistence, safety interlocks, and regulatory checks.

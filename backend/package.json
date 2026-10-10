@@ -2,6 +2,7 @@
   "name": "solar-wind-prediction-api",
   "private": true,
   "scripts": {
-    "start": "node api_server.js"
+    "start": "node api_server.js",
+    "test": "node --test test/*.test.js"
   }
 }
