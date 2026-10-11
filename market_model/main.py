@@ -6,7 +6,9 @@ def main():
 
     agent = MarketAgent()
 
-    result = agent.run()
+    raw = sys.stdin.read().strip()
+    supplied_evidence = json.loads(raw) if raw else None
+    result = agent.run(supplied_evidence)
 
     print(json.dumps(result, separators=(",", ":")))
 

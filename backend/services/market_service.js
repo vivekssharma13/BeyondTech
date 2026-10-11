@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
 const { market: fallbackMarket } = require('../api_dashboard_data');
 const { createBucketCache } = require('./cache_service');
 const { createId, recordAgentRun, recordActivity } = require('./runtime_store');
+const { runJsonProcess } = require('./subprocess_service');
+const { startComponent, completeComponent, failComponent, recordFallback, cacheObserver } = require('./workflow_service');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const MARKET_SCRIPT = path.join(ROOT, 'market_model', 'main.py');
@@ -12,28 +13,15 @@ const DEFAULT_PYTHON = fs.existsSync(path.join(ROOT, '.venv', 'bin', 'python'))
   : 'python3';
 
 function runMarketAgent({ python = DEFAULT_PYTHON, script = MARKET_SCRIPT } = {}) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(python, [script], {
-      cwd: path.dirname(script),
-      env: process.env,
-    });
-    let output = '';
-    let error = '';
-    child.stdout.on('data', chunk => { output += chunk; });
-    child.stderr.on('data', chunk => { error += chunk; });
-    child.on('error', reject);
-    child.on('close', code => {
-      let parsed;
-      try {
-        parsed = JSON.parse(output);
-      } catch {
-        reject(new Error(error.trim() || 'Market Agent returned invalid JSON'));
-        return;
-      }
-      if (code !== 0 || parsed.error) reject(new Error(parsed.error || error.trim() || 'Market Agent failed'));
-      else resolve(parsed);
-    });
-  });
+  return runJsonProcess({
+    command: python,
+    args: [script],
+    cwd: path.dirname(script),
+    env: process.env,
+    timeoutMs: process.env.MARKET_PROCESS_TIMEOUT_MS || process.env.PYTHON_PROCESS_TIMEOUT_MS || 30000,
+    maxOutputBytes: process.env.PYTHON_MAX_OUTPUT_BYTES || 1048576,
+    retries: Number(process.env.MARKET_PROCESS_RETRIES || 0),
+  }).then(result => result.data);
 }
 
 function validateMarketResult(value) {
@@ -62,9 +50,10 @@ function createMarketService({
   cache = createBucketCache(),
   now = () => Date.now(),
 } = {}) {
-  async function execute() {
+  async function execute(workflowId = null) {
     const generatedAt = new Date(now()).toISOString();
     const agentRunId = createId('market-run');
+    const execution = startComponent({ workflowId, component: 'MARKET', sourceType: 'MODEL_PREDICTION', modelName: process.env.DECISION_AI_MODEL || process.env.MARKET_AI_MODEL || 'gpt-5-mini', input: { inputArtifact: 'market_model/output/simulatedWorld.json' } });
     let response;
     let failure;
     try {
@@ -77,18 +66,32 @@ function createMarketService({
         generatedAt,
         updatedAt: generatedAt,
         nextRunAt: new Date((Math.floor(now() / 900000) + 1) * 900000).toISOString(),
+        cacheExpiresAt: new Date((Math.floor(now() / 900000) + 1) * 900000).toISOString(),
+        scheduled: false,
+        nextScheduledRunAt: null,
         source: 'MARKET_AGENT',
+        sourceType: 'MODEL_PREDICTION',
+        priceUnit: 'INR_PER_MWH',
       };
+      completeComponent(execution, { sourceType: response.sourceType, output: { currentPricePerMWh: response.currentPricePerMWh, forecasts: response.forecasts, trend: response.trend, source: response.source } });
     } catch (error) {
       failure = error;
+      failComponent(execution, error);
+      recordFallback({ workflowId, runId: execution.runId, component: 'MARKET', reason: error.message });
       response = {
         ...fallbackMarket,
+        status: 'DEGRADED',
         agentRunId,
         generatedAt,
         updatedAt: generatedAt,
         nextRunAt: new Date((Math.floor(now() / 900000) + 1) * 900000).toISOString(),
+        cacheExpiresAt: new Date((Math.floor(now() / 900000) + 1) * 900000).toISOString(),
+        scheduled: false,
+        nextScheduledRunAt: null,
         expectedPeakAt: new Date(now() + 3 * 60 * 60 * 1000).toISOString(),
         source: 'MOCK_FALLBACK',
+        sourceType: 'FALLBACK',
+        priceUnit: 'INR_PER_MWH',
       };
     }
     recordAgentRun({ agent: 'MARKET', agentRunId, status: response.status, source: response.source, generatedAt, nextRunAt: response.nextRunAt, error: failure?.message });
@@ -96,9 +99,13 @@ function createMarketService({
     return response;
   }
 
-  function getForecast({ refresh = false } = {}) {
+  function getForecast({ refresh = false, workflowId = null } = {}) {
     const currentTime = now();
-    return cache.getOrCreate('market', execute, { refresh, now: currentTime });
+    return cache.getOrCreate('market', () => execute(workflowId), {
+      refresh,
+      now: currentTime,
+      observe: cacheObserver(workflowId, 'MARKET'),
+    });
   }
 
   return { getForecast, cache };

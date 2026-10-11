@@ -1,0 +1,136 @@
+GRIDLINE AI — DEMO SCRIPT
+
+Presenter note:
+Say “nearly 11 years of hourly data,” not 14 years.
+The project contains 94,248 hourly weather records from January 2016 to October 2026.
+These records were used for our research models.
+The live 72-hour dashboard forecast uses future Open-Meteo weather with solar and wind engineering rules.
+
+
+INTRODUCTION — BEYONDTECH
+
+“Hello, everyone.
+We are BeyondTech, and we are excited to present Gridline AI.
+Our goal is to make renewable-energy operations easier to understand, plan, and manage.
+Solar and wind power change with the weather, electricity prices change throughout the day, and operators must make quick decisions while respecting battery and grid limits.
+Gridline AI brings these tasks into one clear platform.
+It combines weather-based generation forecasting, market intelligence, mathematical optimization, controlled AI recommendations, human approval, and a complete audit trail.
+For this hackathon, we use clearly labeled simulated farms, prices, and actions, while future weather can come from a live provider.
+Let me begin with the 3D Farm Explorer.”
+
+
+1. 3D FARM EXPLORER
+
+The 3D Farm Explorer gives us a clear visual view of four demo assets: two solar farms and two wind farms.
+I can move around the scene and select any farm to inspect it.
+
+Each farm is connected to real features in the application.
+It has its own capacity, battery, grid limits, availability, forecast, and operating settings.
+The same farm identity is used by forecasting, optimization, decisions, and financial records.
+This makes the 3D view a useful entry point, not just a visual effect.
+
+For this hackathon, the farms and their current readings are simulated and clearly labeled.
+The goal is to show how an operator could understand and manage several renewable assets from one place.
+Next, I’ll open the Farm Detail page.”
+
+
+2. FARM DETAIL
+
+“The Farm Detail page gives us a closer look at one asset.
+It shows current simulated generation, installed capacity, equipment availability, grid export, available grid space, battery charge, and reserve level.
+
+The weather information matches the farm type.
+Solar farms show sunlight, cloud cover, and temperature.
+Wind farms show wind speed, direction, gusts, air density, and turbine availability.
+These are the same kinds of inputs used for the future forecast.
+
+The page also keeps different types of data separate.
+Current readings are simulated operating data, while future values come from the weather forecast.
+Financial value comes only from approved actions saved in the ledger.
+We never show the full 72-hour estimate as money that has already been earned.
+Next, I’ll show the Generation Outlook.”
+
+
+3. GENERATION OUTLOOK
+
+“This page shows expected generation for every hour over the next 72 hours.
+It gets future weather from Open-Meteo and calculates how much power each farm can produce.
+
+Solar calculations use the sun’s position, radiation, panel direction, temperature loss, inverter efficiency, availability, and capacity.
+Solar is always zero at night.
+Wind calculations adjust wind speed to turbine height and follow turbine cut-in, rated, and cut-out speeds.
+Output can never exceed available farm capacity.
+
+We also trained ExtraTrees research models after comparing three machine-learning approaches.
+The data contains over 94,000 hourly weather records covering nearly 11 years.
+Solar uses measured plant output where available.
+Wind uses an engineering power curve because measured wind-farm output was unavailable.
+The live dashboard uses the safer weather-and-engineering approach, and it does not display a made-up confidence percentage.”
+
+
+4. PERFORMANCE
+
+“The Performance page connects energy results with business value.
+We can view today, seven days, thirty days, or the year to date.
+It shows generated and expected energy, capacity use, availability, solar and wind contribution, battery discharge, and curtailed energy.
+
+The important idea here is honest reporting.
+If we do not have the final outcome needed to calculate forecast accuracy, the page says it is unavailable.
+It does not invent a percentage.
+Lost revenue is also unavailable unless we have enough price and curtailment data to calculate it properly.
+
+Financial value comes from the saved simulation ledger.
+A value is recorded only after a user approves the first hour of a recommendation.
+The remaining 71 hours stay as a forecast.
+This makes it easy to tell the difference between current, forecast, approved, and unavailable information.”
+
+
+5. OPERATIONS
+
+“Operations is where a person reviews settings and recommendations.
+We can change battery reserve, grid export limits, battery mode, operating mode, and farm output limits.
+The optimizer uses these updated settings in its next run.
+
+The Portfolio Decision card shows expected generation, export, storage, purchases, curtailment, battery charge, and projected value.
+It also explains why the plan was selected and its main trade-off.
+
+The confidence score is based on real checks: an optimal solver result, independent safety validation, complete 72-hour inputs, and three compared strategies.
+The current score can reach 90%.
+The missing 10% represents forecast uncertainty that is not yet calibrated, so this is a decision-readiness score—not a promise of profit.
+
+The plan covers 72 hours, but approval applies only the first hour across all farms.
+Repeated, expired, stale, or conflicting approvals are rejected, and no command reaches real equipment.”
+
+
+6. AGENT COMMAND CENTER
+
+“The Agent Command Center shows how the system works together.
+Generation Forecasting creates the 72-hour energy outlook.
+Numerical Market Forecasting creates 288 fifteen-minute demo prices and combines them into 72 hourly prices.
+
+Market Intelligence collects articles from websites we configure.
+For this demo, those websites contain clearly marked simulated articles.
+An AI model finds possible market drivers, risks, and opportunities, but it cannot invent prices or control a farm.
+
+The optimizer uses math to compare selling, storing, buying, and limiting energy while following battery and grid rules.
+The Decision Agent can ask it to compare up to three strategies.
+It must choose a checked plan and cannot approve it.
+
+This page shows ready or completed components, the decision confidence, market path, first-hour actions, workflow history, and ledger records.
+This makes the AI process easy to explain and review.”
+
+
+7. ALERTS AND CLOSING
+
+“The Alerts page gives the operator a simple list of items that may need attention.
+Alerts can cover grid space, equipment availability, battery reserve, weather, forecasts, or an AI workflow.
+Each alert shows what happened, the affected farm, the time, and the seriousness.
+An operator can acknowledge it without removing its history.
+
+Gridline AI brings the full process into one application.
+We view the farms, estimate renewable generation from future weather, create a clear demo market path, 
+find a valid fleet plan, compare checked options with a limited Decision Agent, and require human approval.
+The system then saves the state change and financial result for later review.
+
+The farms, prices, business settings, and actions are simulated for this demo, while weather can come from a live provider.
+The same design can later connect to approved real data without removing the safety, approval, and audit steps.”

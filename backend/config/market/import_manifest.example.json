@@ -1,0 +1,36 @@
+{
+  "datasetId": "REPLACE_WITH_IMMUTABLE_DATASET_ID",
+  "marketDefinition": {
+    "marketId": "REPLACE_WITH_DOCUMENTED_MARKET_ID",
+    "definitionVersion": 1,
+    "displayName": "REPLACE_WITH_DOCUMENTED_DISPLAY_NAME",
+    "marketType": "HISTORICAL_WHOLESALE_ELECTRICITY_MARKET",
+    "referencePricingZone": "REPLACE_WITH_DOCUMENTED_PRICE_AREA",
+    "currency": "INR",
+    "priceUnit": "INR_PER_MWH",
+    "nativeIntervalMinutes": 15,
+    "marketTimezone": "Asia/Kolkata",
+    "sourceMode": "HISTORICAL_DATA",
+    "dataProvenance": {
+      "sourceType": "OBSERVED_MARKET_PRICE",
+      "sourceRef": "REPLACE_WITH_APPROVED_SOURCE_REFERENCE",
+      "permission": "REPLACE_WITH_DATA_USE_AUTHORIZATION"
+    },
+    "congestionLimitations": "REPLACE_WITH_DOCUMENTED_AREA_PRICE_LIMITATIONS",
+    "configurationVersion": 1
+  },
+  "exchange": "REPLACE_WITH_DOCUMENTED_EXCHANGE",
+  "product": "REPLACE_WITH_DOCUMENTED_PRODUCT",
+  "pricingArea": "REPLACE_WITH_DOCUMENTED_PRICE_AREA",
+  "currency": "INR",
+  "priceUnit": "INR_PER_MWH",
+  "timezone": "Asia/Kolkata",
+  "originalSource": "REPLACE_WITH_SOURCE_OWNER",
+  "sourceReference": "REPLACE_WITH_LOCAL_EXPORT_OR_APPROVED_REFERENCE",
+  "retrievalTimestamp": "2026-01-01T00:00:00+05:30",
+  "expectedDeliveryStart": "2026-01-01T00:00:00+05:30",
+  "expectedDeliveryEnd": "2026-01-02T00:00:00+05:30",
+  "publicationTimestamp": null,
+  "revisionIdentifier": null,
+  "configurationVersion": 1
+}

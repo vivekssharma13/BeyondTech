@@ -1,4 +1,8 @@
 const { createId, recordAgentRun, recordActivity } = require('./runtime_store');
+const { startComponent, completeComponent, failComponent } = require('./workflow_service');
+const { saveOptimizerScenario } = require('./audit_repository');
+const { validateFarmState, validateGenerationForecast, validateMarketForecast } = require('./validation_service');
+const { getActiveConfiguration } = require('./configuration_service');
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -12,7 +16,21 @@ function horizonValue(forecast, horizon, field) {
   return forecast.horizons.find(item => item.horizon === horizon)?.[field] ?? 0;
 }
 
-function optimizeFarm({ farm, generationForecast, marketForecast, now = Date.now() }) {
+function optimizeFarm({ farm, generationForecast, marketForecast, now = Date.now(), workflowId = null }) {
+  const execution = startComponent({
+    workflowId,
+    component: 'OPTIMIZER',
+    sourceType: 'USER_CONFIGURED_SIMULATION',
+    modelName: 'LEGACY_FEASIBILITY_CALCULATOR',
+    input: { farmId: farm.farmId, generationForecastRunId: generationForecast.agentRunId, marketForecastRunId: marketForecast.agentRunId },
+  });
+  try {
+  validateFarmState(farm);
+  const activeConfiguration = getActiveConfiguration().configuration;
+  validateGenerationForecast(generationForecast, { expectedFarmId: farm.farmId, now, maxAgeMs: activeConfiguration.freshness.generationForecastMaxAgeMs.value });
+  validateMarketForecast(marketForecast, { now, maxAgeMs: activeConfiguration.freshness.marketForecastMaxAgeMs.value });
+  const degradedInputs = generationForecast.sourceType === 'FALLBACK' || marketForecast.sourceType === 'FALLBACK';
+  if (degradedInputs && !activeConfiguration.fallbackPolicy.allowDegradedSimulation.value) throw new Error('Fallback forecasts are disabled by simulation configuration');
   const generation1h = horizonValue(generationForecast, '1h', 'predictedGenerationMW');
   const generation6h = horizonValue(generationForecast, '6h', 'predictedGenerationMW');
   const exportHeadroom = Math.max(0, farm.gridExportLimitMW - farm.currentExportMW);
@@ -79,11 +97,14 @@ function optimizeFarm({ farm, generationForecast, marketForecast, now = Date.now
   const result = {
     agent: 'OPTIMIZER',
     agentRunId,
-    status: 'COMPLETED',
+    status: degradedInputs ? 'DEGRADED' : 'COMPLETED',
     farmId: farm.farmId,
     generatedAt: new Date(now).toISOString(),
     source: 'SIMULATED',
+    sourceType: 'USER_CONFIGURED_SIMULATION',
     logic: 'RULE_BASED',
+    workflowId,
+    inputDataStatus: degradedInputs ? 'DEGRADED_FALLBACK' : 'VALIDATED',
     inputs: {
       generationForecastRunId: generationForecast.agentRunId,
       marketForecastRunId: marketForecast.agentRunId,
@@ -103,9 +124,16 @@ function optimizeFarm({ farm, generationForecast, marketForecast, now = Date.now
       generation6hMW: round(generation6h),
     },
   };
-  recordAgentRun({ agent: 'OPTIMIZER', agentRunId, farmId: farm.farmId, status: 'COMPLETED', source: result.source, generatedAt: result.generatedAt });
+  saveOptimizerScenario({ workflowId, runId: execution.runId, farmId: farm.farmId, status: result.status, input: result.inputs, result });
+  completeComponent(execution, { status: result.status, sourceType: result.sourceType, output: { farmId: farm.farmId, candidateStrategies, inputDataStatus: result.inputDataStatus } });
+  recordAgentRun({ agent: 'OPTIMIZER', agentRunId, farmId: farm.farmId, status: result.status, source: result.source, generatedAt: result.generatedAt });
   recordActivity({ type: 'OPTIMIZER_COMPLETED', farmId: farm.farmId, message: `Optimizer calculated feasible BUY, SELL and HOLD quantities for ${farm.name}.` });
   return result;
+  } catch (error) {
+    failComponent(execution, error);
+    saveOptimizerScenario({ workflowId, runId: execution.runId, farmId: farm?.farmId || null, status: 'FAILED', input: { generationForecastRunId: generationForecast?.agentRunId, marketForecastRunId: marketForecast?.agentRunId }, result: { error: error.message } });
+    throw error;
+  }
 }
 
 module.exports = { optimizeFarm, clamp };

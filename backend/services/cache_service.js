@@ -8,12 +8,20 @@ function createBucketCache() {
   const entries = new Map();
   const inFlight = new Map();
 
-  async function getOrCreate(keyPrefix, factory, { refresh = false, now = Date.now() } = {}) {
+  async function getOrCreate(keyPrefix, factory, { refresh = false, now = Date.now(), observe = () => {} } = {}) {
     const bucket = bucketFor(now);
     const key = `${keyPrefix}:${bucket}`;
     const existing = entries.get(key);
-    if (!refresh && existing && Date.parse(existing.expiresAt) > now) return existing.data;
-    if (!refresh && inFlight.has(key)) return inFlight.get(key);
+    if (!refresh && existing && Date.parse(existing.expiresAt) > now) {
+      observe({ type: 'CACHE_HIT', cacheCategory: keyPrefix, cacheKey: key, generatedAt: existing.generatedAt, expiresAt: existing.expiresAt, forcedRefresh: false, reusedInFlight: false });
+      return existing.data;
+    }
+    if (!refresh && inFlight.has(key)) {
+      observe({ type: 'CACHE_HIT', cacheCategory: keyPrefix, cacheKey: key, generatedAt: null, expiresAt: new Date((bucket + 1) * FIFTEEN_MINUTES_MS).toISOString(), forcedRefresh: false, reusedInFlight: true });
+      return inFlight.get(key);
+    }
+
+    observe({ type: 'CACHE_MISS', cacheCategory: keyPrefix, cacheKey: key, generatedAt: null, expiresAt: new Date((bucket + 1) * FIFTEEN_MINUTES_MS).toISOString(), forcedRefresh: refresh, reusedInFlight: false });
 
     const pending = Promise.resolve()
       .then(factory)
@@ -25,6 +33,7 @@ function createBucketCache() {
           expiresAt,
           agentRunId: data.agentRunId,
         });
+        observe({ type: 'CACHE_STORED', cacheCategory: keyPrefix, cacheKey: key, generatedAt: data.generatedAt, expiresAt, forcedRefresh: refresh, reusedInFlight: false });
         return data;
       })
       .finally(() => inFlight.delete(key));

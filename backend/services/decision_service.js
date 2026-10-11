@@ -1,5 +1,6 @@
 const { createId, recordAgentRun, recordActivity, saveDecision } = require('./runtime_store');
 const { clamp } = require('./optimizer_service');
+const { startComponent, completeComponent, failComponent } = require('./workflow_service');
 
 const DECISION_CONFIG = Object.freeze({
   weights: {
@@ -27,7 +28,10 @@ function weightedScore(signals, weights) {
   return round(Object.entries(weights).reduce((total, [key, weight]) => total + signals[key] * weight, 0));
 }
 
-function decide({ farm, optimizerResult, generationForecast, marketForecast, now = Date.now(), config = DECISION_CONFIG }) {
+function decide({ farm, optimizerResult, generationForecast, marketForecast, now = Date.now(), config = DECISION_CONFIG, workflowId = null }) {
+  const execution = startComponent({ workflowId, component: 'DECISION', sourceType: 'USER_CONFIGURED_SIMULATION', modelName: 'RULE_BASED_DECISION_ENGINE', input: { farmId: farm.farmId, optimizerRunId: optimizerResult.agentRunId } });
+  try {
+  const degradedInputs = optimizerResult.status === 'DEGRADED' || generationForecast.sourceType === 'FALLBACK' || marketForecast.sourceType === 'FALLBACK';
   const generation1h = horizon(generationForecast.horizons, '1h', 'predictedGenerationMW');
   const generation6h = horizon(generationForecast.horizons, '6h', 'predictedGenerationMW');
   const price1h = horizon(marketForecast.forecasts, '1h', 'predictedPricePerMWh');
@@ -113,10 +117,13 @@ function decide({ farm, optimizerResult, generationForecast, marketForecast, now
     agent: 'DECISION',
     agentRunId,
     decisionId: agentRunId,
-    status: 'COMPLETED',
+    status: degradedInputs ? 'DEGRADED' : 'COMPLETED',
     generatedAt: new Date(now).toISOString(),
     source: 'SIMULATED',
+    sourceType: 'USER_CONFIGURED_SIMULATION',
     logic: 'RULE_BASED',
+    workflowId,
+    inputDataStatus: degradedInputs ? 'DEGRADED_FALLBACK' : 'VALIDATED',
     executionStatus: 'PENDING',
     marketPricePerMWh: marketForecast.currentPricePerMWh,
     farmId: farm.farmId,
@@ -134,9 +141,14 @@ function decide({ farm, optimizerResult, generationForecast, marketForecast, now
     reason: `${winner.action} ${winner.quantityMW} MW is the strongest valid option after applying forecast, battery, grid and conservative safety rules.`,
   };
   saveDecision(result);
-  recordAgentRun({ agent: 'DECISION', agentRunId, farmId: farm.farmId, status: 'COMPLETED', source: result.source, generatedAt: result.generatedAt });
+  completeComponent(execution, { status: result.status, sourceType: result.sourceType, output: { farmId: farm.farmId, decision: result.decision, quantityMW: result.quantityMW, confidencePct, inputDataStatus: result.inputDataStatus } });
+  recordAgentRun({ agent: 'DECISION', agentRunId, farmId: farm.farmId, status: result.status, source: result.source, generatedAt: result.generatedAt });
   recordActivity({ type: 'DECISION_GENERATED', farmId: farm.farmId, message: `Decision Agent recommended ${winner.action} ${winner.quantityMW} MW with ${confidencePct}% confidence.` });
   return result;
+  } catch (error) {
+    failComponent(execution, error);
+    throw error;
+  }
 }
 
 module.exports = { DECISION_CONFIG, decide, weightedScore };

@@ -28,9 +28,12 @@ async function getFarms() {
 
 async function getForecast(farmId = 'sunpeak', range = '24h') {
   const [forecast, generation] = await Promise.all([apiGet(`/farms/${farmId}/forecast`), apiGet(`/farms/${farmId}/generation?range=${range}&interval=15m`)])
+  const recentActual = generation.data.slice(-25).map((item) => ({ label: item.timestamp.slice(5, 16).replace('T', ' '), actual: item.actualMW, forecast: null }))
+  const futureOutlook = (forecast.intervals || []).map((item) => ({ label: item.intervalEnd.slice(5, 16).replace('T', ' '), actual: null, forecast: item.predictedGenerationMW }))
   return {
-    horizons: forecast.horizons.map((item) => ({ label: `NEXT ${item.horizon.toUpperCase()}`, horizon: item.horizon, value: item.predictedGenerationMW, change: item.changePct, confidence: item.confidencePct, range: `${item.lowerBoundMW}–${item.upperBoundMW} MW` })),
-    series: generation.data.map((item) => ({ label: item.timestamp.slice(11, 16), actual: item.actualMW, forecast: item.forecastMW })),
+    horizons: forecast.horizons.map((item) => ({ label: `NEXT ${item.horizon.toUpperCase()}`, horizon: item.horizon, value: item.predictedGenerationMW, change: item.changePct, confidence: item.confidencePct, range: item.lowerBoundMW == null || item.upperBoundMW == null ? 'Uncertainty not calibrated' : `${item.lowerBoundMW}–${item.upperBoundMW} MW` })),
+    series: [...recentActual, ...futureOutlook],
+    hourly: forecast.intervals || [],
     metadata: forecast,
   }
 }
@@ -51,7 +54,10 @@ export const energyService = {
   getPerformance: (range = 'today', farmId) => apiGet(`/performance?range=${range}${farmId ? `&farmId=${farmId}` : ''}`),
   getAlerts: () => apiGet('/alerts').then((result) => result.alerts),
   getAgentRuns: () => apiGet('/agent-runs').then((result) => result.runs),
-  getMarketForecast: () => apiGet('/market/forecast').then((data) => ({ ...data, current: data.currentPricePerMWh, oneHour: data.forecasts.find((item) => item.horizon === '1h').predictedPricePerMWh, sixHour: data.forecasts.find((item) => item.horizon === '6h').predictedPricePerMWh, day: data.forecasts.find((item) => item.horizon === '24h').predictedPricePerMWh, peak: data.expectedPeakPricePerMWh, peakTime: data.expectedPeakAt ? new Date(data.expectedPeakAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : 'N/A', confidence: data.forecasts[0].confidencePct })),
+  getMarketForecast: () => apiGet('/market/forecast').then((data) => {
+    const at = (horizon) => data.forecasts?.find((item) => item.horizon === horizon)?.predictedPricePerMWh ?? null
+    return { ...data, current: data.currentPricePerMWh ?? null, oneHour: at('1h'), sixHour: at('6h'), day: at('24h'), peak: data.expectedPeakPricePerMWh ?? null, peakTime: data.expectedPeakAt ? new Date(data.expectedPeakAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : 'N/A', confidence: null }
+  }),
   getOptimizerRecommendations: (farmId) => apiGet(`/optimizer/recommendations${farmId ? `?farmId=${farmId}` : ''}`),
   getDecisionRecommendation: (farmId) => apiGet(`/decision/recommendation${farmId ? `?farmId=${farmId}` : ''}`),
   actOnDecision: (decisionId, action) => apiWrite(`/decision/recommendation/${decisionId}/action`, 'POST', { action }),
@@ -61,5 +67,9 @@ export const energyService = {
   getActivity: (farmId) => apiGet(`/activity${farmId ? `?farmId=${farmId}` : ''}`).then((result) => result.activity),
   getFreshness: () => apiGet('/freshness'),
   getHealth: () => apiGet('/health'),
+  getWorkflows: (limit = 50) => apiGet(`/workflows?limit=${limit}`).then((result) => result.workflows),
+  getWorkflow: (workflowId) => apiGet(`/workflows/${workflowId}`),
+  getDecisions: (limit = 50) => apiGet(`/decisions?limit=${limit}`).then((result) => result.decisions),
+  getFinancialLedger: (limit = 100) => apiGet(`/financial-ledger?limit=${limit}`).then((result) => result.entries),
   getModelPrediction,
 }

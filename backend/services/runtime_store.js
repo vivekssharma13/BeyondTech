@@ -4,6 +4,7 @@ let sequence = 0;
 const agentRuns = [];
 const activity = [];
 const decisions = new Map();
+const { saveDecisionProposal, loadDecision } = require('./audit_repository');
 
 function createId(prefix) {
   sequence += 1;
@@ -18,10 +19,11 @@ function pushLimited(collection, item) {
 
 function recordAgentRun(run) {
   const generatedAt = run.generatedAt || new Date().toISOString();
+  const normalizedStatus = run.status || 'COMPLETED';
   return pushLimited(agentRuns, {
     time: generatedAt.slice(11, 16),
-    title: `${run.agent} run completed`,
-    detail: `${run.source || 'service'} · ${run.status || 'COMPLETED'}`,
+    title: `${run.agent} run ${normalizedStatus.toLowerCase()}`,
+    detail: `${run.source || 'service'} · ${normalizedStatus}`,
     ...run,
     generatedAt,
   });
@@ -45,11 +47,16 @@ function listActivity({ farmId } = {}) {
 
 function saveDecision(decision) {
   decisions.set(decision.agentRunId, decision);
+  saveDecisionProposal(decision);
   return decision;
 }
 
 function getDecision(id) {
-  return decisions.get(id);
+  const inMemory = decisions.get(id);
+  if (inMemory) return inMemory;
+  const persisted = loadDecision(id);
+  if (persisted) decisions.set(id, persisted);
+  return persisted;
 }
 
 function resetRuntimeStore() {

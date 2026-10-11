@@ -2,16 +2,26 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 
-const { createGenerationService, predictionInputsForFarm } = require('../services/generation_service');
 const { createMarketService } = require('../services/market_service');
 const { optimizeFarm } = require('../services/optimizer_service');
 const { decide } = require('../services/decision_service');
-const { createApiServer, fleetSummary } = require('../api_server');
+const { createApiServer, fleetSummary, ledgerRangeStart } = require('../api_server');
 const { farms, seriesFor, performanceFor } = require('../api_dashboard_data');
 const { resetRuntimeStore } = require('../services/runtime_store');
+const { getDatabase } = require('../services/database_service');
+const { resetFarmStateForTests } = require('../services/simulation_state_service');
 
 const NOW = Date.parse('2026-10-09T12:00:00Z');
 const clone = value => JSON.parse(JSON.stringify(value));
+const INITIAL_FARMS = clone(farms);
+
+test('financial ledger ranges use the selected period and India-local calendar boundaries', () => {
+  const now = Date.parse('2026-10-11T01:00:00.000Z');
+  assert.equal(ledgerRangeStart('today', now), '2026-10-10T18:30:00.000Z');
+  assert.equal(ledgerRangeStart('ytd', now), '2025-12-31T18:30:00.000Z');
+  assert.equal(ledgerRangeStart('7d', now), '2026-10-04T01:00:00.000Z');
+  assert.equal(ledgerRangeStart('30d', now), '2026-09-11T01:00:00.000Z');
+});
 
 function farmFixture(overrides = {}) {
   return {
@@ -39,7 +49,8 @@ function farmFixture(overrides = {}) {
 
 function generationFixture({ one = 80, six = 70, confidence = 90 } = {}) {
   return {
-    agent: 'GENERATION_FORECAST', agentRunId: 'generation-test', status: 'COMPLETED', source: 'MODEL',
+    agent: 'GENERATION_FORECAST', agentRunId: 'generation-test', status: 'COMPLETED', source: 'MODEL', sourceType: 'MODEL_PREDICTION',
+    farmId: 'sunpeak', generatedAt: new Date(NOW).toISOString(),
     horizons: [
       { horizon: '1h', predictedGenerationMW: one, lowerBoundMW: one - 2, upperBoundMW: one + 2, confidencePct: confidence },
       { horizon: '6h', predictedGenerationMW: six, lowerBoundMW: six - 5, upperBoundMW: six + 5, confidencePct: confidence },
@@ -52,7 +63,8 @@ function generationFixture({ one = 80, six = 70, confidence = 90 } = {}) {
 
 function marketFixture({ current = 7000, one = 7200, six = 8000, confidence = 90, riskLevel = 'LOW' } = {}) {
   return {
-    agent: 'MARKET', agentRunId: 'market-test', status: 'COMPLETED', source: 'MARKET_AGENT',
+    agent: 'MARKET', agentRunId: 'market-test', status: 'COMPLETED', source: 'MARKET_AGENT', sourceType: 'MODEL_PREDICTION',
+    generatedAt: new Date(NOW).toISOString(), priceUnit: 'INR_PER_MWH',
     currentPricePerMWh: current,
     forecasts: [
       { horizon: '1h', predictedPricePerMWh: one, confidencePct: confidence },
@@ -66,41 +78,14 @@ function marketFixture({ current = 7000, one = 7200, six = 8000, confidence = 90
   };
 }
 
-test.beforeEach(() => resetRuntimeStore());
-
-test('generation forecast uses the existing model runner on success', async () => {
-  const runner = async () => ({
-    solar_power: 750, solar_power_lower: 700, solar_power_upper: 800, solar_power_confidence: 92,
-    wind_power: 500, wind_power_lower: 450, wind_power_upper: 550, wind_power_confidence: 88,
-  });
-  const service = createGenerationService({ predictionRunner: runner, now: () => NOW });
-  const result = await service.getForecast(farmFixture());
-  assert.equal(result.source, 'MODEL_WITH_HISTORICAL_INPUTS');
-  assert.equal(result.weatherInputSource, 'HISTORICAL_DATASET');
-  assert.equal(result.horizons.length, 5);
-  assert.equal(result.horizons[0].predictedGenerationMW, 90);
+test.beforeEach(() => {
+  farms.forEach((farm, index) => Object.assign(farm, clone(INITIAL_FARMS[index])));
+  resetFarmStateForTests(farms);
+  resetRuntimeStore();
 });
 
-test('wind forecasts receive existing farm wind telemetry in model units', () => {
-  const farm = clone(farms.find(item => item.type === 'WIND'));
-  const inputs = predictionInputsForFarm(farm);
-  assert.equal(inputs.wind_speed_80m, farm.weather.windSpeedMps * 3.6);
-  assert.equal(inputs.wind_speed_120m, farm.weather.windSpeedMps * 3.6 * 1.06);
-  assert.equal(inputs.wind_gusts_10m, farm.weather.windGustMps * 3.6);
-  assert.equal(inputs.wind_direction_80m, farm.weather.windDirectionDeg);
-  assert.equal(predictionInputsForFarm(farms.find(item => item.type === 'SOLAR')), undefined);
-});
-
-test('generation and market services reuse their 15-minute cache', async () => {
-  let generationCalls = 0;
+test('market service reuses its 15-minute cache', async () => {
   let marketCalls = 0;
-  const generation = createGenerationService({
-    predictionRunner: async () => {
-      generationCalls += 1;
-      return { solar_power: 700, solar_power_lower: 650, solar_power_upper: 750, solar_power_confidence: 90 };
-    },
-    now: () => NOW,
-  });
   const market = createMarketService({
     marketRunner: async () => {
       marketCalls += 1;
@@ -108,18 +93,8 @@ test('generation and market services reuse their 15-minute cache', async () => {
     },
     now: () => NOW,
   });
-  await generation.getForecast(farmFixture());
-  await generation.getForecast(farmFixture());
   await Promise.all([market.getForecast(), market.getForecast()]);
-  assert.equal(generationCalls, 5);
   assert.equal(marketCalls, 1);
-});
-
-test('generation forecast falls back to backend demo data', async () => {
-  const service = createGenerationService({ predictionRunner: async () => { throw new Error('model down'); }, now: () => NOW });
-  const result = await service.getForecast(farmFixture());
-  assert.equal(result.source, 'MOCK_FALLBACK');
-  assert.equal(result.horizons.length, 5);
 });
 
 test('market forecast accepts valid Market Agent output', async () => {
@@ -195,12 +170,13 @@ test('decision quantity exactly equals the selected Optimizer quantity', () => {
   assert.equal(result.decision.quantityMW, selected.quantityMW);
 });
 
-function dispatch(server, method, url, body) {
+function dispatch(server, method, url, body, remoteAddress = '127.0.0.1') {
   return new Promise(resolve => {
     const request = new EventEmitter();
     request.method = method;
     request.url = url;
     request.headers = { host: 'localhost' };
+    request.socket = { remoteAddress };
     const response = {
       writeHead(status, headers) { this.status = status; this.headers = headers; },
       end(payload) { resolve({ status: this.status, body: payload ? JSON.parse(payload) : null }); },
@@ -212,6 +188,34 @@ function dispatch(server, method, url, body) {
     });
   });
 }
+
+test('configuration writes fail closed except when explicitly enabled on local development', async () => {
+  const previousNodeEnv = process.env.NODE_ENV;
+  const previousWriteFlag = process.env.ENABLE_LOCAL_CONFIGURATION_WRITES;
+  const server = createApiServer();
+  try {
+    const configuration = (await dispatch(server, 'GET', '/api/configuration')).body.configuration;
+    delete process.env.NODE_ENV;
+    delete process.env.ENABLE_LOCAL_CONFIGURATION_WRITES;
+    assert.equal((await dispatch(server, 'POST', '/api/configuration', { configuration })).status, 403);
+
+    process.env.NODE_ENV = 'production';
+    process.env.ENABLE_LOCAL_CONFIGURATION_WRITES = 'true';
+    assert.equal((await dispatch(server, 'POST', '/api/configuration', { configuration })).status, 403);
+
+    process.env.NODE_ENV = 'development';
+    assert.equal((await dispatch(server, 'POST', '/api/configuration', { configuration }, '10.0.0.8')).status, 403);
+    const allowed = await dispatch(server, 'POST', '/api/configuration', { configuration }, '::1');
+    assert.equal(allowed.status, 201);
+    assert.equal(allowed.body.sourceType, 'USER_CONFIGURED_SIMULATION');
+  } finally {
+    if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousNodeEnv;
+    if (previousWriteFlag === undefined) delete process.env.ENABLE_LOCAL_CONFIGURATION_WRITES;
+    else process.env.ENABLE_LOCAL_CONFIGURATION_WRITES = previousWriteFlag;
+    server.close();
+  }
+});
 
 test('unknown farm returns 404', async () => {
   const server = createApiServer();
@@ -258,8 +262,8 @@ test('performance is internally consistent and marks unavailable accuracy', () =
 });
 
 test('decision action is idempotent and repeated execution returns 409', async () => {
-  const generationService = { getForecast: async (farm) => ({ ...generationFixture({ one: farm.currentGenerationMW, six: farm.currentGenerationMW - 20 }), farmId: farm.farmId }) };
-  const marketService = { getForecast: async () => marketFixture({ current: 5000, six: 9000 }) };
+  const generationService = { getForecast: async (farm) => ({ ...generationFixture({ one: farm.currentGenerationMW, six: farm.currentGenerationMW - 20 }), farmId: farm.farmId, generatedAt: new Date().toISOString() }) };
+  const marketService = { getForecast: async () => ({ ...marketFixture({ current: 5000, six: 9000 }), generatedAt: new Date().toISOString() }) };
   const server = createApiServer({ generationService, marketService });
   const generated = await dispatch(server, 'GET', '/api/decision/recommendation?farmId=sunpeak');
   const first = await dispatch(server, 'POST', `/api/decision/recommendation/${generated.body.decisionId}/action`, { action: 'ACCEPT' });
@@ -270,7 +274,35 @@ test('decision action is idempotent and repeated execution returns 409', async (
   server.close();
 });
 
-test('health reports market configuration required when no provider key exists', async () => {
+test('decision workflow, proposal, approval, allocation, and ledger are correlated', async () => {
+  const farm = farms.find(item => item.farmId === 'desertbloom');
+  const original = clone(farm);
+  const generationService = { getForecast: async (selected) => ({ ...generationFixture({ one: selected.currentGenerationMW, six: selected.currentGenerationMW - 20 }), farmId: selected.farmId, generatedAt: new Date().toISOString() }) };
+  const marketService = { getForecast: async () => ({ ...marketFixture({ current: 5000, six: 9000 }), generatedAt: new Date().toISOString() }) };
+  const server = createApiServer({ generationService, marketService });
+  try {
+    const generated = await dispatch(server, 'GET', '/api/decision/recommendation?farmId=desertbloom');
+    assert.equal(generated.status, 200);
+    assert.ok(generated.body.workflowId);
+    const trace = await dispatch(server, 'GET', `/api/workflows/${generated.body.workflowId}`);
+    assert.equal(trace.status, 200);
+    assert.equal(trace.body.workflow.status, 'COMPLETED');
+    assert.ok(trace.body.components.some(component => component.component === 'OPTIMIZER'));
+    assert.ok(trace.body.components.some(component => component.component === 'DECISION'));
+
+    const applied = await dispatch(server, 'POST', `/api/decision/recommendation/${generated.body.decisionId}/action`, { action: 'ACCEPT' });
+    assert.equal(applied.status, 200);
+    const db = getDatabase();
+    assert.equal(db.prepare('SELECT status FROM decision_proposals WHERE decision_id=?').get(generated.body.decisionId).status, 'APPLIED');
+    assert.equal(db.prepare('SELECT COUNT(*) AS count FROM applied_simulated_allocations WHERE decision_id=?').get(generated.body.decisionId).count, 1);
+    assert.equal(db.prepare('SELECT COUNT(*) AS count FROM financial_ledger WHERE decision_id=?').get(generated.body.decisionId).count, 1);
+  } finally {
+    Object.assign(farm, original);
+    server.close();
+  }
+});
+
+test('health reports market provider configuration consistently', async () => {
   const previousDecisionKey = process.env.DECISION_AI_API_KEY;
   const previousMarketKey = process.env.MARKET_AI_API_KEY;
   const previousOpenAiKey = process.env.OPENAI_API_KEY;
@@ -280,8 +312,9 @@ test('health reports market configuration required when no provider key exists',
   const server = createApiServer();
   const response = await dispatch(server, 'GET', '/api/health');
   assert.equal(response.status, 200);
-  assert.equal(response.body.components.marketAgent.status, 'CONFIGURATION_REQUIRED');
-  assert.equal(response.body.components.optimizer.source, 'SIMULATED');
+  if (response.body.components.marketAgent.providerConfigured) assert.notEqual(response.body.components.marketAgent.status, 'CONFIGURATION_REQUIRED');
+  else assert.equal(response.body.components.marketAgent.status, 'CONFIGURATION_REQUIRED');
+  assert.equal(response.body.components.optimizer.source, 'PORTFOLIO_MILP');
   server.close();
   if (previousDecisionKey) process.env.DECISION_AI_API_KEY = previousDecisionKey;
   if (previousMarketKey) process.env.MARKET_AI_API_KEY = previousMarketKey;

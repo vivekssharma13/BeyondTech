@@ -1,4 +1,5 @@
 const { recordActivity } = require('./runtime_store');
+const { persistOperationalState } = require('./simulation_state_service');
 
 const BATTERY_MODES = ['AUTO', 'CHARGE', 'DISCHARGE', 'IDLE'];
 const OPERATING_MODES = ['AI_ASSISTED', 'MANUAL'];
@@ -36,9 +37,9 @@ function updateOperations(farm, body) {
   if (body.batteryMode && !BATTERY_MODES.includes(body.batteryMode)) throw new TypeError(`batteryMode must be one of ${BATTERY_MODES.join(', ')}`);
   if (body.operatingMode && !OPERATING_MODES.includes(body.operatingMode)) throw new TypeError(`operatingMode must be one of ${OPERATING_MODES.join(', ')}`);
 
-  for (const field of allowed) {
-    if (Object.prototype.hasOwnProperty.call(body, field)) farm[field] = body[field];
-  }
+  const changes = Object.fromEntries(allowed.filter(field => Object.prototype.hasOwnProperty.call(body, field)).map(field => [field, body[field]]));
+  const persisted = persistOperationalState(farm, changes);
+  Object.assign(farm, persisted.state);
   const state = operationsFor(farm);
   recordActivity({ type: 'OPERATIONS_UPDATED', farmId: farm.farmId, message: `Simulated operating settings updated for ${farm.name}.` });
   return { ...state, status: 'APPLIED' };

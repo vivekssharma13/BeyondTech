@@ -6,8 +6,8 @@ class MarketAgent:
         self.openai_provider = openai_provider or OpenAIProvider()
         self.scraper_service = scraper_service or ScraperOutputService()
 
-    def run(self):
-        scraped_data = self.scraper_service.load()
+    def run(self, supplied_evidence=None):
+        scraped_data = supplied_evidence if supplied_evidence is not None else self.scraper_service.load()
         results = scraped_data.get("results") if isinstance(scraped_data, dict) else None
         if isinstance(results, list):
             seen = set()

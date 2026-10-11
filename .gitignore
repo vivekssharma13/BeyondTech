@@ -4,6 +4,10 @@ __pycache__/
 node_modules/
 dist/
 market_model/output/model_runs.jsonl
+backend/data/*.sqlite
+backend/data/*.sqlite-shm
+backend/data/*.sqlite-wal
+backend/data/market_imports/
 .DS_Store
 .env
 .env.*
